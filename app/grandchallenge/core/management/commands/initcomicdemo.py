@@ -111,11 +111,11 @@ class Command(BaseCommand):
 
 
             Result.objects.create(
-                challenge=demo, metrics={"acc": 0.5,"dice":0.7}, job=job
+                challenge=demo, metrics={"acc": 0.5,"dice":0.7, "case":{"dice":{"0":0.3,"1":0.8,"2":0.7},"acc":{"0":0.4,"1":0.9,"2":0.6}}}, job=job
             )
 
             Result.objects.create(
-                challenge=demo, metrics={"acc": 0.7, "dice": 0.8}, job=job2
+                challenge=demo, metrics={"acc": 0.7, "dice": 0.8, "case":{"dice":{"0":0.3,"1":0.9,"2":0.8},"acc":{"0":0.5,"1":0.8,"2":0.5}}}, job=job2
             )
 
             demo.evaluation_config.score_jsonpath = "acc"
