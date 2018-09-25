@@ -50,6 +50,13 @@ class Command(BaseCommand):
                 password="demop",
                 active=True,
             )
+
+            demoparticipant2 = UserenaSignup.objects.create_user(
+                username="ecem",
+                email="ecem@example.com",
+                password="ecem",
+                active=True,
+            )
             UserenaSignup.objects.create_user(
                 username="user",
                 email="user@example.com",
@@ -72,6 +79,8 @@ class Command(BaseCommand):
                 hidden=False,
             )
             demo.add_participant(demoparticipant)
+            demo.add_participant(demoparticipant2)
+
             Page.objects.create(
                 challenge=demo, title="all", permission_lvl="ALL"
             )
@@ -88,14 +97,25 @@ class Command(BaseCommand):
             method.save()
 
             submission = Submission(challenge=demo, creator=demoparticipant)
+            submission2 = Submission(challenge=demo, creator=demoparticipant2)
             content = ContentFile(base64.b64decode(b""))
+
             submission.file.save("test.csv", content)
             submission.save()
 
+            submission2.file.save("test.csv", content)
+            submission2.save()
+
             job = Job.objects.create(submission=submission, method=method)
+            job2 = Job.objects.create(submission=submission2, method=method)
+
 
             Result.objects.create(
-                challenge=demo, metrics={"acc": 0.5}, job=job
+                challenge=demo, metrics={"acc": 0.5,"dice":0.7}, job=job
+            )
+
+            Result.objects.create(
+                challenge=demo, metrics={"acc": 0.7, "dice": 0.8}, job=job2
             )
 
             demo.evaluation_config.score_jsonpath = "acc"
