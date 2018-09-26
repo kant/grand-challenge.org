@@ -12,11 +12,11 @@
         <thead>
         <tr>
             <th>Case</th>
-            <th>User</th>
+
             {% if site.evaluation_config.use_teams %}
                 <th>Team</th>
             {% endif %}
-            <th>Date</th>
+
             <th>{{ site.evaluation_config.score_title }}</th>
 
             {% for col in site.evaluation_config.extra_results_columns %}
@@ -35,9 +35,14 @@
         <tbody>
 
         {% for case, jsonpath in site.evaluation_config.extra_results_columns.items %}
-            <td>{{ object.metrics|get_jsonpath:jsonpath|floatformat:"-4" }}</td>
-                 <td>{{ jsonpath}}</td
-                <td>{{ case}}</td>
+
+
+            {% for items in object.metrics|get_jsonpath:jsonpath %}
+                {% with path=jsonpath|add:"."|add:items %}
+
+                 <p>{{object.metrics|get_jsonpath:path}}</p>
+
+
 
 
 
@@ -45,9 +50,7 @@
 
                 <td>{{ forloop.counter}}</td>
 
-                <td>
-                    {{ object.job.submission.creator|user_profile_link }}
-                </td>
+
 
                 {% if site.evaluation_config.use_teams %}
                     <td>
@@ -55,12 +58,11 @@
                     </td>
                 {% endif %}
 
-                <td data-order="{{ object.created|date:"U" }}">{{ object.created }}</td>
 
                 <td><a href="{{ object.absolute_url }}">{{ object.metrics|get_jsonpath:site.evaluation_config.score_jsonpath|floatformat:"-4" }}</a></td>
 
                 {% for _, jsonpath in site.evaluation_config.extra_results_columns.items %}
-                    <td>{{ object.metrics|get_jsonpath:jsonpath|floatformat:"-4" }}</td>
+                    <td>{{ object.metrics|get_jsonpath:path}}</td>
                 {% endfor %}
 
                 {% if site.evaluation_config.display_submission_comments %}
@@ -78,6 +80,8 @@
                 {% endif %}
 
             </tr>
+                {% endwith %}
+                  {% endfor %}
          {% endfor %}
         </tbody>
     </table>
