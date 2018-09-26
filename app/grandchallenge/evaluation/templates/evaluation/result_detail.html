@@ -13,11 +13,6 @@
         <tr>
             <th>Case</th>
 
-            {% if site.evaluation_config.use_teams %}
-                <th>Team</th>
-            {% endif %}
-
-            <th>{{ site.evaluation_config.score_title }}</th>
 
             {% for col in site.evaluation_config.extra_results_columns %}
                 <th>{{ col }}</th>
@@ -34,37 +29,36 @@
         </thead>
         <tbody>
 
-        {% for case, jsonpath in site.evaluation_config.extra_results_columns.items %}
+
+
+
+
+
+           {% for case, jsonpath in site.evaluation_config.extra_results_columns.items %}
+
+               {% if forloop.counter == 1 %}
+
 
 
             {% for items in object.metrics|get_jsonpath:jsonpath %}
 
-
-
-
-
-
             <tr>
 
 
-                <td>{% widthratio forloop.parentloop.counter 1 forloop.counter %}</td>
+                <td>{{ forloop.counter }} </td>
 
 
 
-                {% if site.evaluation_config.use_teams %}
-                    <td>
-                        {{ object|get_team_html }}
-                    </td>
-                {% endif %}
 
 
-                <td><a href="{{ object.absolute_url }}">{{ object.metrics|get_jsonpath:site.evaluation_config.score_jsonpath|floatformat:"-4" }}</a></td>
+
 
                 {% for _, jsonpath in site.evaluation_config.extra_results_columns.items %}
                     {% with path=jsonpath|add:"."|add:items %}
 
-                 <p>{{site.evaluation_config.extra_results_columns.items|length}}</p>
-\                    <td>{{ object.metrics|get_jsonpath:path}}</td>
+                        <td>{{ object.metrics|get_jsonpath:path}}</td>
+
+
                     {% endwith %}
                 {% endfor %}
 
@@ -85,6 +79,7 @@
             </tr>
 
                   {% endfor %}
+               {% endif %}
          {% endfor %}
         </tbody>
     </table>
@@ -162,8 +157,8 @@
 
     </dl>
 
-    <h3>Metrics</h3>
-    <pre>{{ object.metrics|json_dumps }}</pre>
+    <!-- <h3>Metrics</h3>
+    <pre>{{ object.metrics|json_dumps }}</pre> -->
 
     {% get_obj_perms user for site as "site_perms" %}
     {% if "change_challenge" in site_perms %}
