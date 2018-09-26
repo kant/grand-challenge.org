@@ -38,9 +38,7 @@
 
 
             {% for items in object.metrics|get_jsonpath:jsonpath %}
-                {% with path=jsonpath|add:"."|add:items %}
 
-                 <p>{{object.metrics|get_jsonpath:path}}</p>
 
 
 
@@ -48,7 +46,8 @@
 
             <tr>
 
-                <td>{{ forloop.counter}}</td>
+
+                <td>{% widthratio forloop.parentloop.counter 1 forloop.counter %}</td>
 
 
 
@@ -62,7 +61,11 @@
                 <td><a href="{{ object.absolute_url }}">{{ object.metrics|get_jsonpath:site.evaluation_config.score_jsonpath|floatformat:"-4" }}</a></td>
 
                 {% for _, jsonpath in site.evaluation_config.extra_results_columns.items %}
-                    <td>{{ object.metrics|get_jsonpath:path}}</td>
+                    {% with path=jsonpath|add:"."|add:items %}
+
+                 <p>{{site.evaluation_config.extra_results_columns.items|length}}</p>
+\                    <td>{{ object.metrics|get_jsonpath:path}}</td>
+                    {% endwith %}
                 {% endfor %}
 
                 {% if site.evaluation_config.display_submission_comments %}
@@ -80,7 +83,7 @@
                 {% endif %}
 
             </tr>
-                {% endwith %}
+
                   {% endfor %}
          {% endfor %}
         </tbody>
