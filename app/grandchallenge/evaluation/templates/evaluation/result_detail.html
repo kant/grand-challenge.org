@@ -5,6 +5,106 @@
 
 {% block pagecontent %}
 
+
+    <h2>Results {{ site.evaluation_config.extra_results_columns }} </h2>
+
+    <table class="table" id="resultsTable">
+        <thead>
+        <tr>
+            <th>Case</th>
+            <th>User</th>
+            {% if site.evaluation_config.use_teams %}
+                <th>Team</th>
+            {% endif %}
+            <th>Date</th>
+            <th>{{ site.evaluation_config.score_title }}</th>
+
+            {% for col in site.evaluation_config.extra_results_columns %}
+                <th>{{ col }}</th>
+            {% endfor %}
+
+            {% if site.evaluation_config.display_submission_comments %}
+                <th>Comment</th>
+            {% endif %}
+
+            {% if site.evaluation_config.show_supplementary_file_link %}
+                <th>{{ site.evaluation_config.supplementary_file_label }}</th>
+            {% endif %}
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for case, jsonpath in site.evaluation_config.extra_results_columns.items %}
+            <td>{{ object.metrics|get_jsonpath:jsonpath|floatformat:"-4" }}</td>
+                 <td>{{ jsonpath}}</td
+                <td>{{ case}}</td>
+
+
+
+            <tr>
+
+                <td>{{ forloop.counter}}</td>
+
+                <td>
+                    {{ object.job.submission.creator|user_profile_link }}
+                </td>
+
+                {% if site.evaluation_config.use_teams %}
+                    <td>
+                        {{ object|get_team_html }}
+                    </td>
+                {% endif %}
+
+                <td data-order="{{ object.created|date:"U" }}">{{ object.created }}</td>
+
+                <td><a href="{{ object.absolute_url }}">{{ object.metrics|get_jsonpath:site.evaluation_config.score_jsonpath|floatformat:"-4" }}</a></td>
+
+                {% for _, jsonpath in site.evaluation_config.extra_results_columns.items %}
+                    <td>{{ object.metrics|get_jsonpath:jsonpath|floatformat:"-4" }}</td>
+                {% endfor %}
+
+                {% if site.evaluation_config.display_submission_comments %}
+                    <td>{{ object.job.submission.comment }}</td>
+                {% endif %}
+
+                {% if site.evaluation_config.show_supplementary_file_link %}
+                    <th>
+                        {% if object.job.submission.supplementary_file %}
+                            <a href="{{ object.job.submission.supplementary_file.url }}">
+                                <i class="fa fa-file"></i>
+                            </a>
+                        {% endif %}
+                    </th>
+                {% endif %}
+
+            </tr>
+         {% endfor %}
+        </tbody>
+    </table>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#resultsDetailTable').DataTable({
+                {% comment %}
+                    The column index of the default sort, must match the table
+                    set up.
+                {% endcomment %}
+                order: [[0, "asc"]],
+                "pageLength": 50,
+                "columnDefs": [{
+                    {%  if site.evaluation_config.show_supplementary_file_link %}
+                        "targets": [-1],
+                    {% endif %}
+                    "searchable": false,
+                    "orderable": false
+                }],
+                ordering: true
+            });
+
+        });
+    </script>
+
+
     <h2>Result</h2>
 
     <dl>
