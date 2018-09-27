@@ -8,7 +8,7 @@
 
     <h2>Results {{ site.evaluation_config.extra_results_columns }} </h2>
 
-    <table class="table" id="resultsTable">
+    <table class="table" id="resultsDetailTable">
         <thead>
         <tr>
             <th>Case</th>
@@ -31,9 +31,6 @@
 
 
 
-
-
-
            {% for case, jsonpath in site.evaluation_config.extra_results_columns.items %}
 
                {% if forloop.counter == 1 %}
@@ -46,11 +43,6 @@
 
 
                 <td>{{ forloop.counter }} </td>
-
-
-
-
-
 
 
                 {% for _, jsonpath in site.evaluation_config.extra_results_columns.items %}

@@ -258,25 +258,34 @@ class ResultDetail(DetailView):
 
     model = Result
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update({"titles": ['Left Lung Dice', 'Right Lung Dice']})
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.select_related(
+            "job__submission__creator__user_profile"
+        )
+        return queryset.filter(
+            Q(challenge=self.request.challenge), Q(public=True)
+        )
 
-        display = [
-            {
-                "Left Lung Dice": 0.9,
-                "Right Lung Dice": 0.8,
-            },
-            {"Left Lung Dice": 0.3,
-             "Right Lung Dice": 0.2,
-             },
-
-
-        ]
-
-        context.update({"display": display})
-
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context.update({"titles": ['Left Lung Dice', 'Right Lung Dice']})
+    #
+    #     display = [
+    #         {
+    #             "Left Lung Dice": 0.9,
+    #             "Right Lung Dice": 0.8,
+    #         },
+    #         {"Left Lung Dice": 0.3,
+    #          "Right Lung Dice": 0.2,
+    #          },
+    #
+    #
+    #     ]
+    #
+    #     context.update({"display": display})
+    #
+    #     return context
 
 class ResultUpdate(UserIsChallengeAdminMixin, SuccessMessageMixin, UpdateView):
     model = Result

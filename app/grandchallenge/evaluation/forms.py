@@ -23,6 +23,7 @@ class ConfigForm(forms.ModelForm):
             "score_jsonpath",
             "score_default_sort",
             "extra_results_columns",
+            "details_results_columns",
             "submission_page_html",
             "new_results_are_public",
             "allow_submission_comments",

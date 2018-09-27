@@ -85,6 +85,21 @@ class Config(UUIDModel):
             '{"Accuracy": "aggregates.acc","Dice": "dice.mean"}'
         ),
     )
+    details_results_columns = JSONField(
+        default=dict,
+        blank=True,
+        help_text=(
+            "A JSON object that contains the result details columns from metrics.json "
+            "that will be displayed on the results detail page. "
+            "Where the KEYS contain the titles of the columns, "
+            "and the VALUES contain the JsonPath to the corresponding metric "
+            "in metrics.json. "
+            "For example:\n\n"
+            '{"Accuracy": "aggregates.acc","Dice": "dice.mean"}'
+        ),
+    )
+
+
     allow_submission_comments = models.BooleanField(
         default=False,
         help_text=(
