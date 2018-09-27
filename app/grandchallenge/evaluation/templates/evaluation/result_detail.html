@@ -6,7 +6,7 @@
 {% block pagecontent %}
 
 
-    <h2>Results {{ site.evaluation_config.extra_results_columns }} </h2>
+    <h2>Result Details</h2>
 
     <table class="table" id="resultsDetailTable">
         <thead>
@@ -14,7 +14,7 @@
             <th>Case</th>
 
 
-            {% for col in site.evaluation_config.extra_results_columns %}
+            {% for col in site.evaluation_config.details_results_columns %}
                 <th>{{ col }}</th>
             {% endfor %}
 
@@ -31,13 +31,8 @@
 
 
 
-           {% for case, jsonpath in site.evaluation_config.extra_results_columns.items %}
+            {% for case in object.metrics|get_jsonpath:"case" %}
 
-               {% if forloop.counter == 1 %}
-
-
-
-            {% for items in object.metrics|get_jsonpath:jsonpath %}
 
             <tr>
 
@@ -45,13 +40,13 @@
                 <td>{{ forloop.counter }} </td>
 
 
-                {% for _, jsonpath in site.evaluation_config.extra_results_columns.items %}
-                    {% with path=jsonpath|add:"."|add:items %}
+                {% for _, jsonpath in site.evaluation_config.details_results_columns.items %}
+                            {% for key,value in case.items %}
+                                {% if key == jsonpath %}
+                                <td>{{ value }}</td>
+                                {% endif %}
 
-                        <td>{{ object.metrics|get_jsonpath:path}}</td>
-
-
-                    {% endwith %}
+                            {% endfor %}
                 {% endfor %}
 
                 {% if site.evaluation_config.display_submission_comments %}
@@ -71,8 +66,7 @@
             </tr>
 
                   {% endfor %}
-               {% endif %}
-         {% endfor %}
+
         </tbody>
     </table>
 
