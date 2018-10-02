@@ -25,6 +25,9 @@ from grandchallenge.evaluation.models import (
     Method,
     Config,
 )
+from grandchallenge.evaluation.templatetags.evaluation_extras import (
+    get_jsonpath
+)
 
 
 class ConfigUpdate(UserIsChallengeAdminMixin, SuccessMessageMixin, UpdateView):
@@ -267,25 +270,21 @@ class ResultDetail(DetailView):
             Q(challenge=self.request.challenge), Q(public=True)
         )
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context.update({"titles": ['Left Lung Dice', 'Right Lung Dice']})
-    #
-    #     display = [
-    #         {
-    #             "Left Lung Dice": 0.9,
-    #             "Right Lung Dice": 0.8,
-    #         },
-    #         {"Left Lung Dice": 0.3,
-    #          "Right Lung Dice": 0.2,
-    #          },
-    #
-    #
-    #     ]
-    #
-    #     context.update({"display": display})
-    #
-    #     return context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Change the orientation of the case results to records
+        # Hacky, but works for now
+        display = {
+            k: get_jsonpath(self.object.metrics, v).values()
+            for k, v in self.object.challenge.evaluation_config.details_results_columns.items()
+        }
+        display = [dict(zip(display, col)) for col in zip(*display.values())]
+
+        context.update({"display": display})
+
+        return context
+
 
 class ResultUpdate(UserIsChallengeAdminMixin, SuccessMessageMixin, UpdateView):
     model = Result

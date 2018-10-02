@@ -13,59 +13,22 @@
         <tr>
             <th>Case</th>
 
-
             {% for col in site.evaluation_config.details_results_columns %}
                 <th>{{ col }}</th>
             {% endfor %}
 
-            {% if site.evaluation_config.display_submission_comments %}
-                <th>Comment</th>
-            {% endif %}
-
-            {% if site.evaluation_config.show_supplementary_file_link %}
-                <th>{{ site.evaluation_config.supplementary_file_label }}</th>
-            {% endif %}
         </tr>
         </thead>
         <tbody>
 
-
-
-            {% for case in object.metrics|get_jsonpath:"case" %}
-
-
+        {% for case in display %}
             <tr>
-
-
                 <td>{{ forloop.counter }} </td>
-
-
-                {% for _, jsonpath in site.evaluation_config.details_results_columns.items %}
-                            {% for key,value in case.items %}
-                                {% if key == jsonpath %}
-                                <td>{{ value }}</td>
-                                {% endif %}
-
-                            {% endfor %}
+                {% for col in site.evaluation_config.details_results_columns %}
+                    <td>{{ case|get_jsonpath:col }}</td>
                 {% endfor %}
-
-                {% if site.evaluation_config.display_submission_comments %}
-                    <td>{{ object.job.submission.comment }}</td>
-                {% endif %}
-
-                {% if site.evaluation_config.show_supplementary_file_link %}
-                    <th>
-                        {% if object.job.submission.supplementary_file %}
-                            <a href="{{ object.job.submission.supplementary_file.url }}">
-                                <i class="fa fa-file"></i>
-                            </a>
-                        {% endif %}
-                    </th>
-                {% endif %}
-
             </tr>
-
-                  {% endfor %}
+        {% endfor %}
 
         </tbody>
     </table>
@@ -137,7 +100,7 @@
             <dd>
                 <a class="btn btn-primary"
                    href="{{ object.job.submission.annotationset.get_absolute_url }}">
-                   <i class="fa fa-eye"></i> View Predictions</a>
+                    <i class="fa fa-eye"></i> View Predictions</a>
             </dd>
         {% endif %}
 
