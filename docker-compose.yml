@@ -4,10 +4,10 @@ services:
 
   postgres:
     image: postgres:10.4
-    environment:
-      - POSTGRES_PASSWORD=secretpassword
-      - POSTGRES_USER=comic
-      - POSTGRES_DB=comic
+    environment: &postgresenv
+      POSTGRES_PASSWORD: secretpassword
+      POSTGRES_USER: comic
+      POSTGRES_DB: comic
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "comic"]
       interval: 10s
@@ -16,13 +16,10 @@ services:
     restart: always
 
   web:
-    build:
-      context: .
-      dockerfile: ./dockerfiles/web/Dockerfile
-      args:
-       - PIPENV_DEV=--dev
+    image: grandchallenge/web-test:latest
     environment:
-      - GOOGLE_ANALYTICS_ID=UA-XXXXX-Y
+      <<: *postgresenv
+      GOOGLE_ANALYTICS_ID: UA-XXXXX-Y
     command: >-
       bash -c "
       python manage.py collectstatic --noinput
@@ -30,7 +27,7 @@ services:
       && python manage.py migrate
       && python manage.py check_permissions
       && python manage.py initcomicdemo
-      && gunicorn -b 0.0.0.0 config.wsgi
+      && gunicorn -w 1 -b 0.0.0.0 config.wsgi
       "
     restart: always
     depends_on:
@@ -41,7 +38,6 @@ services:
     volumes:
       - static:/static/
       - media:/dbox/Dropbox/media/
-      - ./app:/app/
       # The docker socket is only needed for testing
       - /var/run/docker.sock:/var/run/docker.sock
     group_add:
@@ -53,7 +49,7 @@ services:
       retries: 5
 
   http:
-    build: ./dockerfiles/http
+    image: grandchallenge/http:latest
     environment:
       - SERVER_NAME=localhost
       - SENDFILE_STATUS=off
@@ -82,11 +78,12 @@ services:
     restart: always
 
   celery_worker:
-    build:
-      context: .
-      dockerfile: ./dockerfiles/web/Dockerfile
+    image: grandchallenge/web-test:latest
+    environment:
+      <<: *postgresenv
     restart: always
-    command: "celery -A config worker -l info -c 2"
+    command: "celery -A config worker -l info -c 1"
+    scale: 1
     depends_on:
       web:
         condition: service_healthy
@@ -98,11 +95,12 @@ services:
       - web
 
   celery_worker_evaluation:
-    build:
-      context: .
-      dockerfile: ./dockerfiles/web/Dockerfile
+    image: grandchallenge/web-test:latest
+    environment:
+      <<: *postgresenv
     restart: always
-    command: "celery -A config worker -l info -Q evaluation -c 2"
+    command: "celery -A config worker -l info -Q evaluation -c 1"
+    scale: 1
     depends_on:
       web:
         condition: service_healthy
@@ -118,9 +116,9 @@ services:
       - 999
 
   celery_beat:
-    build:
-      context: .
-      dockerfile: ./dockerfiles/web/Dockerfile
+    image: grandchallenge/web-test:latest
+    environment:
+      <<: *postgresenv
     restart: always
     command: "celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler --pidfile=\"/tmp/celerybeat.pid\""
     depends_on:
