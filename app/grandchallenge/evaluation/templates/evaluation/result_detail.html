@@ -60,7 +60,9 @@
     <h2>Result</h2>
 
     <dl>
-
+    <dt>Extra</dt>
+    <dd><th> {{ object.job.submission.annotationset }}</th> </dd>
+    <dd><th>{{ site.evaluation_config.details_results_columns }}</th></dd>
         <dt>User</dt>
         <dd>
             {{ object.job.submission.creator|user_profile_link }}
