@@ -42,6 +42,15 @@ class Config(UUIDModel):
         (REQUIRED, "Required"),
     )
 
+    ALL = "all"
+    MOST_RECENT = "rec"
+    BEST = "bst"
+    RESULT_DISPLAY_CHOICES = (
+        (ALL, "Display all results"),
+        (MOST_RECENT, "Only display each users most recent result"),
+        (BEST, "Only display each users best result"),
+    )
+
     challenge = models.OneToOneField(
         Challenge,
         on_delete=models.CASCADE,
@@ -100,18 +109,12 @@ class Config(UUIDModel):
             '{"Accuracy": "aggregates.acc","Dice": "dice.mean"}'
         ),
     )
-    details_results_columns = JSONField(
-        default=dict,
-        blank=True,
-        help_text=(
-            "A JSON object that contains the result details columns from metrics.json "
-            "that will be displayed on the results detail page. "
-            "Where the KEYS contain the titles of the columns, "
-            "and the VALUES contain the JsonPath to the corresponding metric "
-            "in metrics.json. "
-            "For example:\n\n"
-            '{"Accuracy": "aggregates.acc","Dice": "dice.mean"}'
-        ),
+
+    result_display_choice = models.CharField(
+        max_length=3,
+        choices=RESULT_DISPLAY_CHOICES,
+        default=ALL,
+        help_text=("Which results should be displayed on the leaderboard?"),
     )
 
     allow_submission_comments = models.BooleanField(
@@ -126,7 +129,6 @@ class Config(UUIDModel):
             "If true, submission comments are shown on the results page."
         ),
     )
-
     supplementary_file_choice = models.CharField(
         max_length=3,
         choices=SUPPLEMENTARY_FILE_CHOICES,
@@ -165,7 +167,6 @@ class Config(UUIDModel):
             "page."
         ),
     )
-
     publication_url_choice = models.CharField(
         max_length=3,
         choices=PUBLICATION_LINK_CHOICES,
@@ -196,7 +197,7 @@ class Config(UUIDModel):
         ),
         blank=True,
     )
-    new_results_are_public = BooleanField(
+    auto_publish_new_results = BooleanField(
         default=True,
         help_text=(
             "If true, new results are automatically made public. If false, "
@@ -340,7 +341,9 @@ class SubmissionEvaluator(Executor):
                 # Unzip the file in the container rather than in the python
                 # process. With resource limits this should provide some
                 # protection against zip bombs etc.
-                writer.exec_run(f"unzip {dest_file} -d /input/")
+                writer.exec_run(
+                    f"unzip {dest_file} -d /input/ -x '__MACOSX/*'"
+                )
 
                 # Remove a duplicated directory
                 input_files = (
@@ -373,7 +376,7 @@ class Result(UUIDModel):
     challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE)
     job = models.OneToOneField("Job", null=True, on_delete=models.CASCADE)
     metrics = JSONField(default=dict)
-    public = models.BooleanField(default=True)
+    published = models.BooleanField(default=True)
     rank = models.PositiveIntegerField(
         default=0,
         help_text=(
@@ -387,8 +390,8 @@ class Result(UUIDModel):
     def save(self, *args, **kwargs):
         # Note: cannot use `self.pk is None` with a custom pk
         if self._state.adding:
-            self.public = (
-                self.challenge.evaluation_config.new_results_are_public
+            self.published = (
+                self.challenge.evaluation_config.auto_publish_new_results
             )
 
         super().save(*args, **kwargs)

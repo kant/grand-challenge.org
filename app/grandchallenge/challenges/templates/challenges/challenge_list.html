@@ -1,8 +1,165 @@
 {% extends 'nobanner.html' %}
 {% load static %}
 {% load url from grandchallenge_tags %}
+{% load humanize %}
+
+{% block containerType %}container{% endblock %}
 
 {% block pageName %}All Challenges{% endblock %}
+
+{% block mainContentSizeClasses %}col-lg-9{% endblock %}
+
+{% block challengeNav %}
+    <div class="col-lg-3 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h1>Filters</h1>
+
+                <div id="projectfilterbuttons">
+
+                    <div id="accordion">
+
+                        <form class="d-none">
+                            <!--Hidden checkbox to display all projectlinks by default -->
+                            <label class="checkbox-inline font-weight-bold">
+                                <input type="checkbox" class="include"
+                                       checked disabled
+                                       id="projectlink">
+                            </label>
+                        </form>
+
+                        <div class="card mb-3">
+                            <a class="collapsed"
+                               data-toggle="collapse"
+                               href="#collapseModality">
+                                <div class="card-body">
+                                    <i class="fas fa-chevron-circle-right"
+                                       id="modality-chevron">
+                                    </i>
+                                    <b>Modality</b></div>
+                            </a>
+
+                            <div id="collapseModality" class="collapse"
+                                 data-parent="#accordion">
+                                <div class="card-body">
+                                    <form>
+                                        {% for modality in modalities %}
+                                            <label id="{{ modality.filter_tag }}"
+                                                   class="checkbox-inline font-weight-bold">
+                                                <input type="checkbox"
+                                                       class="filter"
+                                                       value="{{ modality.modality }}"
+                                                       id="{{ modality.filter_tag }}">
+                                                <span>{{ modality.modality }}</span><span
+                                                    class="counter ml-1 badge badge-pill badge-info"
+                                                    id="{{ modality.filter_tag }}"></span>
+                                            </label><br>
+                                        {% endfor %}
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-3">
+                            <a class="collapsed"
+                               data-toggle="collapse"
+                               href="#collapseTask">
+                                <div class="card-body">
+                                    <i class="fas fa-chevron-circle-right"
+                                       id="task-chevron">
+                                    </i>
+                                    <b>Task type</b></div>
+                            </a>
+
+                            <div id="collapseTask" class="collapse"
+                                 data-parent="#accordion">
+                                <div class="card-body">
+                                    <form>
+                                        {% for task in task_types %}
+                                            <label id="{{ task.filter_tag }}"
+                                                   class="checkbox-inline font-weight-bold">
+                                                <input type="checkbox"
+                                                       class="filter"
+                                                       id="{{ task.filter_tag }}"
+                                                       value="{{ task.type }}">
+                                                <span>{{ task.type }}</span>
+                                                <span
+                                                        class="counter ml-1 badge badge-pill badge-info"
+                                                        id="{{ task.filter_tag }}"></span>
+                                            </label><br>
+                                        {% endfor %}
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="card mb-3">
+                            <a class="collapsed"
+                               data-toggle="collapse"
+                               href="#collapseStructure"
+                               id="headingStructure">
+                                <div class="card-body"><i
+                                        class="fas fa-chevron-circle-right"
+                                        id="structure-chevron">
+                                </i>
+                                    <b>Structure</b></div>
+                            </a>
+
+                            <div id="collapseStructure" class="collapse"
+                                 data-parent="#accordion">
+                                <div class="card-body">
+                                    {% for r in body_regions %}
+
+                                        <label id="{{ r.filter_tag }}"
+                                               class="checkbox-inline font-weight-bold">
+                                            <input type="checkbox"
+                                                   class="filter"
+                                                   id="{{ r.filter_tag }}"
+                                                   value="{{ r.region }}">
+                                            <span>{{ r.region }}</span>
+                                            <span
+                                                    class="counter ml-1 badge badge-pill badge-info"
+                                                    id="{{ r.filter_tag }}"></span>
+                                        </label>
+                                        <div class="ml-3">
+                                            <form>
+                                                {% for s in r.bodystructure_set.all %}
+                                                    <label id="{{ s.filter_tag }}"
+                                                           class="checkbox-inline font-weight-bold">
+                                                        <input type="checkbox"
+                                                               class="filter"
+                                                               id="{{ s.filter_tag }}"
+                                                               value="{{ s.structure }}">
+                                                        <span>{{ s.structure }}</span>
+                                                        <span
+                                                                class="counter ml-1 badge badge-pill badge-info"
+                                                                id="{{ s.filter_tag }}"></span>
+                                                    </label>
+                                                    <br>
+                                                {% endfor %}
+                                            </form>
+                                        </div>
+                                    {% endfor %}
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <span id="info"
+                          class="badge badge-info">Displaying <span
+                            class="counter" id="projectlink"></span>
+                    of <span id="counter-total"></span></span>
+
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
 
 {% block pagecontent %}
 
@@ -27,62 +184,30 @@
         </p>
     {% endif %}
 
-    <div id="projectfilterbuttons" class="mt-4">
+    <div>
+        <span class="badge badge-info">
+            Active filters:
+            <span class="counter" id="active_filter_count"></span>
+        </span>
 
-        <div id="buttonbar" class="alert alert-secondary bg-light">
+        <div id="all_active_filters" style="display: inline-block;"></div>
 
-            <div id="filterby"><h4 class="mt-0 mb-1">Filter by:</h4></div>
+        <button id="btn_reset_filters"
+                class="btn btn-danger btn-sm"
+                value="Reset filters"
+                style="display:none;">
+            Reset filters
+        </button>
 
-            <div id="projectLinksFilters">
-                <form class="form-inline">
-                    <!--Hidden checkbox to display all projectlinks by default -->
-                    <label class="checkbox-inline no_indent projectLinkFilter">
-                        <input type="checkbox" class="include" checked disabled
-                               id="projectlink"
-                               style="display:none;">
-                    </label>
-
-                    <label id="open"
-                           class="mr-3 checkbox-inline no_indent projectLinkFilter"
-                           title="Show projects that accept new submissions">
-                        <input type="checkbox" class="filter" id="open">
-                        Open for submissions <span
-                            class="counter ml-1 badge badge-pill badge-info"
-                            id="open"></span>
-                    </label>
-
-                    <label id="datadownload"
-                           class="mr-3 checkbox-inline no_indent projectLinkFilter"
-                           title="Show projects that offer data download">
-                        <input type="checkbox" class="filter"
-                               id="datadownload">
-                        Data download <span
-                            class="counter ml-1 badge badge-pill badge-info"
-                            id="datadownload"></span>
-                    </label>
-
-                    <label id="grand-challenge"
-                           class="checkbox-inline no_indent projectLinkFilter">
-                        <input type="checkbox" class="filter"
-                               id="grand-challenge">
-                        Hosted on Grand-challenge <span
-                            class="counter ml-1 badge badge-pill badge-info"
-                            id="grand-challenge"></span>
-                    </label>
-                </form>
-                <span id="info" class="badge badge-info">Showing <span
-                        class="counter" id="projectlink"></span>
-                    projects of <span class="counter" id="total"></span></span>
-
-            </div>
-        </div>
+        <p></p>
     </div>
 
-    <div id='projectlinks'>
+
+    <div>
 
         {% for year, challenges in challenges_by_year.items %}
 
-            <div class='projectlinksyearcontainer'>
+            <div>
 
                 <div class='yearHeader' id='{{ year }}'>
                     <h2>{{ year }}</h2>
@@ -90,90 +215,83 @@
 
                 <div class='row'>
                     {% for challenge in challenges %}
-                        <div class="col-12 col-md-6 col-lg-4 mb-3 projectlink {{ challenge.get_link_classes }} {{ challenge.year }}">
+                        <div class="col-12 col-md-6 col-lg-4 mb-3 projectlink {{ challenge.filter_classes|join:" " }} {{ challenge.year }}">
                             <div class="card" style="height:400px">
                                 <a id="{{ challenge.short_name }}"
                                    href="{{ challenge.get_absolute_url }}"
-                                   style="display:block">
-                                    <div class="card-header projectLinkHeading"
-                                         style="min-height:110px;">
-                                        <div class="projectLinkImage">
-                                            <img alt=""
-                                                 src="{{ challenge.thumb_image_url }}">
-                                        </div>
-                                        <div class="projectLinkName">
-                                            <h3>
-                                                {% firstof challenge.title challenge.short_name %}
-                                            </h3>
-                                        </div>
+                                   style="display:block;">
+                                    <div class="card-header small p-0 d-flex flex-row flex-nowrap align-items-center">
+                                        <img class="thumbnail rounded-top-left flex-shrink-0"
+                                             alt="{{ challenge.short_name }} logo"
+                                             src="{{ challenge.thumb_image_url }}">
+                                        <h3 class="m-0 px-3 text-nowrap text-truncate flex-shrink-1">
+                                            {% firstof challenge.title challenge.short_name %}
+                                        </h3>
                                     </div>
                                 </a>
 
-                                <div class="card-body projectLinkBody small"
+                                <div class="card-body small"
                                      style="overflow: hidden; height:250px; line-height:1.5em">
-                                    {{ challenge.description }}
+                                    {{ challenge.description|truncatewords:35 }}
                                 </div>
 
-                                <div class="card-footer small projectLinkFooter"
+                                <div class="card-footer small"
                                      style="line-height:1.5em">
 
-                                    {% if challenge.is_open_for_submissions %}
-                                        <div>
-                                            <a href="{{ challenge.get_submission_link }}">Open
-                                                for submissions</a>
-                                        </div>
-                                    {% endif %}
+                                    <dl class="inline mb-0">
 
-                                    {% if challenge.offers_data_download %}
-                                        <div>
-                                            <a href="{% firstof challenge.download_page challenge.get_absolute_url %}">Data
-                                                download</a>
-                                        </div>
-                                    {% endif %}
+                                        {% if challenge.cached_num_participants %}
+                                            <dt>Patricipants</dt>
+                                            <dd>{{ challenge.cached_num_participants|intcomma }}</dd>
+                                        {% endif %}
 
-                                    {% if challenge.number_of_submissions %}
-                                        <div>
-                                            Results: {{ challenge.number_of_submissions }}
-                                        </div>
-                                    {% endif %}
+                                        {% if challenge.cached_num_results %}
+                                            <dt>Results</dt>
+                                            <dd>
+                                                <a href="{% url 'evaluation:result-list' challenge.short_name %}">{{ challenge.cached_num_results }}</a>
+                                            </dd>
+                                            <dt>Latest Result</dt>
+                                            <dd>
+                                                <a href="{% url 'evaluation:result-list' challenge.short_name %}">{{ challenge.cached_latest_result|naturaltime }}</a>
+                                            </dd>
+                                        {% endif %}
 
-                                    {% if challenge.last_submission_date %}
-                                        <div>
-                                            Latest
-                                            result: {{ challenge.last_submission_date }}
-                                        </div>
-                                    {% endif %}
+                                        {% if challenge.upcoming_workshop_date %}
+                                            <dt>Workshop</dt>
+                                            <dd>
+                                                {{ challenge.upcoming_workshop_date }}
+                                            </dd>
+                                        {% endif %}
 
-                                    {% if challenge.upcoming_workshop_date %}
-                                        <div>
-                                            Workshop: {{ challenge.upcoming_workshop_date }}
-                                        </div>
-                                    {% endif %}
+                                        {% if challenge.event_name %}
+                                            <dt>Associated with</dt>
+                                            <dd>
+                                                <a
+                                                        href="{{ challenge.event_url }}">{{ challenge.event_name }}</a>
+                                            </dd>
+                                        {% endif %}
 
-                                    {% if challenge.event_name %}
-                                        <div>
-                                            Associated with: <a
-                                                href="{{ challenge.event_url }}">{{ challenge.event_name }}</a>
-                                        </div>
-                                    {% endif %}
 
-                                    {% if challenge.publication_journal_name or challenge.publication_url %}
-                                        <div>
-                                            Article: <a
-                                                href="{{ challenge.publication_url }}">{% firstof challenge.publication_journal_name challenge.publication_url %}</a>
-                                        </div>
-                                    {% endif %}
+                                        {% if challenge.publication_journal_name or challenge.publication_url %}
+                                            <dt>Article</dt>
+                                            <dd>
+                                                <a
+                                                        href="{{ challenge.publication_url }}">{% firstof challenge.publication_journal_name challenge.publication_url %}</a>
+                                            </dd>
+                                        {% endif %}
 
-                                    {% if challenge.get_host_link %}
-                                        <div>
-                                            Hosted
-                                            on: {{ challenge.get_host_link|safe }}
-                                        </div>
-                                    {% endif %}
+                                        {% if challenge.get_host_link %}
+                                            <dt>Hosted on</dt>
+                                            <dd>
+                                                {{ challenge.get_host_link|safe }}
+                                            </dd>
+                                        {% endif %}
+
+                                    </dl>
 
                                     {% if not challenge.hosted_on_comic %}
                                         {% if request.user.is_staff %}
-                                            <div class="projectLinkEdit">
+                                            <div>
                                                 <a class="btn btn-primary btn-sm"
                                                    href="{% url 'challenges:external-update' challenge.short_name %}">
                                                     <i class="fas fa-edit"></i>

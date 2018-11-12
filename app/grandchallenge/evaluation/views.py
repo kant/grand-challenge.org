@@ -130,11 +130,16 @@ class SubmissionCreateBase(SuccessMessageMixin, CreateView):
         if now is None:
             now = timezone.now()
 
-        subs = Submission.objects.filter(
-            challenge=self.request.challenge,
-            creator=self.request.user,
-            created__gte=now - period,
-        ).order_by("-created")
+        subs = (
+            Submission.objects.filter(
+                challenge=self.request.challenge,
+                creator=self.request.user,
+                created__gte=now - period,
+            )
+            .exclude(job__status=Job.FAILURE)
+            .order_by("-created")
+            .distinct()
+        )
 
         try:
             next_sub_at = subs[max_subs - 1].created + period
@@ -255,7 +260,9 @@ class ResultList(ListView):
             "job__submission__creator__user_profile"
         )
         return queryset.filter(
-            Q(challenge=self.request.challenge), Q(public=True)
+            Q(challenge=self.request.challenge),
+            Q(published=True),
+            ~Q(rank=0),  # Exclude results without a rank
         )
 
 
@@ -290,5 +297,5 @@ class ResultDetail(DetailView):
 
 class ResultUpdate(UserIsChallengeAdminMixin, SuccessMessageMixin, UpdateView):
     model = Result
-    fields = ("public",)
+    fields = ("published",)
     success_message = "Result successfully updated."

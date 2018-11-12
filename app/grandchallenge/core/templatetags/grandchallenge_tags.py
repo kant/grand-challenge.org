@@ -17,12 +17,10 @@ from django.core.files.storage import DefaultStorage
 from django.db.models import Count
 from django.template import defaulttags
 from django.urls import reverse as reverse_djangocore
-from django.utils.html import format_html
-from django.utils.safestring import mark_safe
+from django_countries import countries
 from matplotlib.backends.backend_svg import FigureCanvasSVG as FigureCanvas
 from matplotlib.figure import Figure
 
-import grandchallenge.core.views
 from grandchallenge.core.api import get_public_results_by_challenge_name
 from grandchallenge.core.exceptions import PathResolutionException
 from grandchallenge.core.templatetags import library_plus
@@ -324,26 +322,6 @@ def sanitize_django_items(string):
 
 
 @register.simple_tag
-def metafooterpages():
-    """ Get html for links to general pages like 'contact' """
-    html_string = mark_safe("")
-    pages = grandchallenge.core.views.getPages(settings.MAIN_PROJECT_NAME)
-    for p in pages:
-        if not p.hidden:
-            url = reverse("mainproject-home", kwargs={"page_title": p.title})
-            if subdomain_is_projectname():
-                url = settings.MAIN_HOST_NAME + url
-            # TODO: JM add class=active to the active link
-            # See https://getbootstrap.com/docs/3.3/components/#navbar
-            html_string += format_html(
-                "<li class='nav-item'><a class='nav-link metaFooterMenuItem' href='{}'>{}</a></li>",
-                url,
-                p.display_title if p.display_title else p.title,
-            )
-    return html_string
-
-
-@register.simple_tag
 def main_page_url():
     """ Gets the url to the main page """
     if settings.SUBDOMAIN_IS_PROJECTNAME:
@@ -403,7 +381,7 @@ class ListDirNode(template.Node):
         return makeErrorMsgHtml(errormsg)
 
     def render(self, context):
-        challenge_short_name = context.page.challenge.short_name
+        challenge_short_name = context["currentpage"].challenge.short_name
         projectpath = challenge_short_name + "/" + self.path
         storage = DefaultStorage()
         try:
@@ -560,7 +538,7 @@ class ImageBrowserNode(template.Node):
     def get_custom_options_include(self, context):
         """ The viewer options and behaviour can be custimized by passing along a piece of 
         javascript."""
-        challenge_short_name = context.page.challenge.short_name
+        challenge_short_name = context["currentpage"].challenge.short_name
         if "config" in self.args:
             downloadlink = reverse(
                 "project_serve_file",
@@ -589,7 +567,7 @@ class ImageBrowserNode(template.Node):
         
         Raises OSError if directory can not be found
         """
-        challenge_short_name = context.page.challenge.short_name
+        challenge_short_name = context["currentpage"].challenge.short_name
         projectpath = challenge_short_name + "/" + path
         storage = DefaultStorage()
         filenames = storage.listdir(projectpath)[1]
@@ -779,18 +757,9 @@ class InsertFileNode(template.Node):
         # TODO check content safety
         # For some special pages like login and signup, there is no current page
         # In that case just don't try any link rewriting
-        # TODO: here confused coding comes to light: I need to have the page
-        # object that this template tag is on in order to process it properly.
-        # I use both the element .page, added by
-        # ComicSiteRequestContext, and a key 'currentpage' added by the view.
-        # I think both are not ideal, and should be rewritten so all template
-        # tags are implicitly passed page (and project) by default. It think
-        # this needs custom template context processors or custom middleware.
-        # As a workaround, just checking for both conditions.
+
         if "currentpage" in context:
             currentpage = context["currentpage"]
-        elif hasattr(context, "page"):
-            currentpage = context.page
         else:
             currentpage = None
 
@@ -869,7 +838,7 @@ class InsertGraphNode(template.Node):
             )
             return self.make_error_msg(error_msg)
 
-        challenge_short_name = context.page.challenge.short_name
+        challenge_short_name = context["currentpage"].challenge.short_name
         filename = os.path.join(
             settings.MEDIA_ROOT, challenge_short_name, filename_clean
         )
@@ -885,8 +854,10 @@ class InsertGraphNode(template.Node):
         base_url = reverse(
             "pages:insert-detail",
             kwargs={
-                "challenge_short_name": context.page.challenge.short_name,
-                "page_title": context.page.title,
+                "challenge_short_name": context[
+                    "currentpage"
+                ].challenge.short_name,
+                "page_title": context["currentpage"].title,
                 "dropboxpath": "remove",
             },
         )
@@ -1066,13 +1037,13 @@ def render_anode09_table(filename):
     table_id = id_generator()
     tableHTML = (
         """<table border=1 class = "comictable csvtable sortable" id="%s">
-            <thead><tr>
-                <td class ="firstcol">FPs/scan</td><td align=center width='54'>1/8</td>
-                <td align=center width='54'>1/4</td>
-                <td align=center width='54'>1/2</td><td align=center width='54'>1</td>
-                <td align=center width='54'>2</td><td align=center width='54'>4</td>
-                <td align=center width='54'>8</td><td align=center width='54'>average</td>
-            </tr></thead>"""
+                <thead><tr>
+                    <td class ="firstcol">FPs/scan</td><td align=center width='54'>1/8</td>
+                    <td align=center width='54'>1/4</td>
+                    <td align=center width='54'>1/2</td><td align=center width='54'>1</td>
+                    <td align=center width='54'>2</td><td align=center width='54'>4</td>
+                    <td align=center width='54'>8</td><td align=center width='54'>average</td>
+                </tr></thead>"""
         % table_id
     )
     tableHTML = tableHTML + "<tbody>"
@@ -1153,7 +1124,7 @@ def parse_php_arrays(filename):
             if result is None:
                 msg = (
                     "Could not match regex pattern '%s' to '%s'\
-                                        "
+                                            "
                     % (phpvar.pattern, var)
                 )
                 continue
@@ -1161,7 +1132,7 @@ def parse_php_arrays(filename):
             if len(result.groups()) != 2:
                 msg = (
                     "Expected to find  varname and content,\
-                          but regex '%s' found %d items:%s "
+                              but regex '%s' found %d items:%s "
                     % (
                         phpvar.pattern,
                         len(result.groups()),
@@ -1294,19 +1265,24 @@ class ProjectStatisticsNode(template.Node):
         """
 
         all_users = self.allusers
-        key = "ProjectStatisticsNode.{}.{}".format(
-            context.page.challenge.pk, all_users
-        )
-        content = cache.get(key)
-        if content is None:
-            content = self._get_map(
-                context.page.challenge, all_users, self.include_header
+
+        if all_users:
+            key = "ProjectStatisticsNode.AllUsers"
+        else:
+            key = "ProjectStatisticsNode.{}".format(
+                context["currentpage"].challenge.pk
             )
+
+        content = cache.get(key)
+
+        if content is None:
+            content = self._get_map(context, all_users, self.include_header)
             cache.set(key, content, 10 * 60)
+
         return content
 
     @classmethod
-    def _get_map(cls, challenge, all_users, include_header):
+    def _get_map(cls, context, all_users, include_header):
         snippet_header = "<div class='statistics'>"
         snippet_footer = "</div>"
 
@@ -1314,18 +1290,18 @@ class ProjectStatisticsNode(template.Node):
             User = get_user_model()
             users = User.objects.all().distinct()
         else:
-            users = challenge.get_participants()
+            users = context["currentpage"].challenge.get_participants()
 
         country_counts = (
             UserProfile.objects.filter(user__in=users)
+            .exclude(country="")
             .values("country")
             .annotate(dcount=Count("country"))
+            .order_by("-dcount")
         )
-        chart_data = [["Country", "#Participants"]]
-        for country_count in country_counts:
-            chart_data.append(
-                [str(country_count["country"]), country_count["dcount"]]
-            )
+
+        chart_data = [[str(c["country"]), c["dcount"]] for c in country_counts]
+
         snippet_geochart = """
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
         <script type='text/javascript'>
@@ -1336,22 +1312,47 @@ class ProjectStatisticsNode(template.Node):
                 var data = google.visualization.arrayToDataTable(
                 {data}
                 );
-                var options = {{}};
+                var options = {{
+                    colorAxis: {{
+                        colors: [
+                            '#440154', 
+                            '#32658e', 
+                            '#20a486', 
+                            '#63cb5f', 
+                            '#a8db34', 
+                            '#d0e11c', 
+                            '#e7e419', 
+                            '#f1e51d', 
+                            '#f8e621', 
+                            '#fbe723', 
+                            '#fbe723', 
+                            '#fde725', 
+                            '#fde725', 
+                            '#fde725', 
+                            '#fde725', 
+                            '#fde725'
+                        ]
+                    }},
+                    backgroundColor: '#c9eeff'
+                }};
                 var chart = new google.visualization.GeoChart(document.getElementById('chart_div'));
                 chart.draw(data, options);
             }};
         </script>
         <div id="chart_div"></div>
         """.format(
-            data=chart_data, maps_api_key=settings.GOOGLE_MAPS_API_KEY
+            data=[["Country", "#Participants"]] + chart_data,
+            maps_api_key=settings.GOOGLE_MAPS_API_KEY,
         )
+
         snippet = ""
+
         if include_header:
             snippet += "<h1>Statistics</h1><br/>\n"
-        snippet += """
-        <p>Number of users: {num_users}</p>
-        {geochart}
-        """.format(
-            num_users=len(users), geochart=snippet_geochart
-        )
+
+        if not all_users:
+            snippet += f"<p>Number of users: {len(users)}</p>\n"
+
+        snippet += snippet_geochart
+
         return snippet_header + snippet + snippet_footer

@@ -4,8 +4,6 @@
 
 {% block pagecontent %}
 
-    {% get_obj_perms user for site as "site_perms" %}
-
     <h2>Evaluation Jobs</h2>
 
     <div class="table-responsive">
@@ -21,7 +19,7 @@
                 {% if site.evaluation_config.allow_submission_comments %}
                     <th>Comment</th>
                 {% endif %}
-                {% if "change_challenge" in site_perms %}
+                {% if "change_challenge" in challenge_perms %}
                     <th>Hide/Publish</th>
                 {% endif %}
             </tr>
@@ -49,9 +47,8 @@
 
                     {% if job.output %}
                         <td>{{ job.output|user_error }}</td>
-                    {% elif job.result.metrics and job.result.public %}
-                        <td>
-                            <a href="{{ job.result.get_absolute_url }}">Result</a>
+                    {% elif job.result.metrics and job.result.published %}
+                        <td><a href="{{ job.result.absolute_url }}">Result</a>
                         </td>
                     {% else %}
                         <td></td>
@@ -67,21 +64,21 @@
                         <td>{{ job.submission.comment }}</td>
                     {% endif %}
 
-                    {% if "change_challenge" in site_perms %}
+                    {% if "change_challenge" in challenge_perms %}
                         <td>
                             {% if job.result %}
                                 <form method="post"
                                       action="{% url 'evaluation:result-update' site.short_name job.result.pk %}">
                                     {% csrf_token %}
-                                    {% if job.result.public %}
-                                        <input type="hidden" name="public"
+                                    {% if job.result.published %}
+                                        <input type="hidden" name="published"
                                                value="false">
                                         <button type="submit"
                                                 class="btn btn-xs btn-danger">
                                             Hide Result
                                         </button>
                                     {% else %}
-                                        <input type="hidden" name="public"
+                                        <input type="hidden" name="published"
                                                value="true">
                                         <button type="submit"
                                                 class="btn btn-xs btn-primary">

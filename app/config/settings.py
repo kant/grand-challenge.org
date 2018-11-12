@@ -1,6 +1,7 @@
 # Django settings for comic project.
 import glob
 import os
+import re
 from datetime import timedelta
 from distutils.util import strtobool as strtobool_i
 
@@ -19,6 +20,16 @@ DEBUG = strtobool(os.environ.get("DEBUG", "True"))
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
+
+# Who gets the 404 notifications?
+manager_email = os.environ.get("MANAGER_EMAIL", None)
+if manager_email:
+    MANAGERS = [("Manager", manager_email)]
+
+IGNORABLE_404_URLS = [
+    re.compile(r"\.(php|cgi)$"),
+    re.compile(r"^/phpmyadmin/"),
+]
 
 # Django will throw an exeception if the URL you type to load the framework is
 # not in the list below. This is a security measure.
@@ -54,7 +65,6 @@ DEFAULT_FROM_EMAIL = os.environ.get(
 SERVER_EMAIL = os.environ.get("SERVER_EMAIL", "root@localhost")
 
 ANONYMOUS_USER_NAME = "AnonymousUser"
-EVERYONE_GROUP_NAME = "everyone"
 
 AUTH_PROFILE_MODULE = "profiles.UserProfile"
 USERENA_USE_HTTPS = False
@@ -221,8 +231,7 @@ TEMPLATES = [
 ]
 
 MIDDLEWARE = (
-    # Sentry 404 must be as close as possible to the top
-    "raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware",
+    "django.middleware.common.BrokenLinkEmailsMiddleware",  # Keep BrokenLinkEmailsMiddleware near the top
     "raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -249,6 +258,7 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.humanize",
     "django.contrib.admin",
+    "django.contrib.postgres",
 ]
 
 THIRD_PARTY_APPS = [
@@ -286,6 +296,7 @@ LOCAL_APPS = [
     "grandchallenge.container_exec",
     "grandchallenge.datasets",
     "grandchallenge.submission_conversion",
+    "grandchallenge.statistics",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_PARTY_APPS
@@ -460,6 +471,10 @@ CELERY_BEAT_SCHEDULE = {
     "clear_sessions": {
         "task": "grandchallenge.core.tasks.clear_sessions",
         "schedule": timedelta(days=1),
+    },
+    "update_filter_classes": {
+        "task": "grandchallenge.challenges.tasks.update_filter_classes",
+        "schedule": timedelta(minutes=5),
     },
 }
 

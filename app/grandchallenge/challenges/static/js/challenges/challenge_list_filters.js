@@ -27,11 +27,11 @@ $(document).ready(function () {
     }
 
     function updateTotalCounter() {
-        //Write the total number of projectlinks, invisible or visable, into
+        //Write the total number of projectlinks, invisible or visible, into
         //a span with class 'counter' and id 'total'
 
         var count = $("div." + BASE_SELECTOR).length;
-        $("span.counter#total").html(count)
+        $("#counter-total").html(count)
 
     }
 
@@ -58,10 +58,43 @@ $(document).ready(function () {
         //Make sure items shown correspond to checkboxes
         log("Refreshing all links");
         var projectlinks = {"show": $(), "hide": $()};
+
+        var active_filters = [];
+
         filterbuttons.each(function (i, d) {
             log("updating according to " + d.id);
-            projectlinks = modifyCollection($(d), projectlinks)
+            var checkbox = $(d);
+            if (checkbox.attr("class") === "filter" && checkbox.is(':checked')) {
+                active_filters.push(checkbox);
+            }
+            projectlinks = modifyCollection(checkbox, projectlinks)
         });
+
+        //Update active filters and counter visualization
+        $('#active_filter_count').text(active_filters.length);
+        $('#all_active_filters').empty();
+        active_filters.forEach(function (checkbox) {
+            var close_icon = $('<i>', {'class': 'fas fa-times'});
+            var text = $('<span>', {'class': 'filter-text'}).text(" " + checkbox.val());
+            var filter_tag = $('<button>', {'class': 'btn btn-outline-info btn-sm'});
+
+            filter_tag.append(close_icon).append(text);
+            filter_tag.click(function () {
+                checkbox.prop('checked', false);
+                updateAll();
+            });
+
+            $('#all_active_filters').append(filter_tag);
+        });
+
+        var reset_button = $('#btn_reset_filters');
+
+        if (active_filters.length > 0) {
+            reset_button.show();
+        } else {
+            reset_button.hide();
+        }
+
 
         //after collection all modifications, apply these
         var show = projectlinks["show"];
@@ -114,8 +147,7 @@ $(document).ready(function () {
             if (checkbox.is(':checked')) {
                 log("hiding all non '." + name + "'");
                 hide = hide.add(".projectlink:not(." + name + ")");
-            }
-            else {
+            } else {
                 log("filter on '." + name + "' released. doing nothing.");
             }
 
@@ -126,8 +158,7 @@ $(document).ready(function () {
                 log("showing ''." + name + "'");
                 show = show.add(".projectlink." + name);
 
-            }
-            else {
+            } else {
                 log("hiding '." + name + "'");
                 hide = hide.add(".projectlink." + name);
             }
@@ -135,7 +166,6 @@ $(document).ready(function () {
         } else {
             log("WARNING, checkbox having class " + checkbox.attr("class") + " did not have a known class. I don't know what to do when this box is checked")
         }
-
         collection = {"show": show, "hide": hide};
         return collection;
     }
@@ -176,8 +206,7 @@ $(document).ready(function () {
             if (count === 0) {
                 log("hiding year" + d.id);
                 $(this).hide();
-            }
-            else {
+            } else {
                 //log("showing year"+ d.id + "count was " + count);
                 $(this).show();
             }
@@ -200,6 +229,11 @@ $(document).ready(function () {
         return filtered;
     }
 
+    $('#btn_reset_filters').click(function () {
+        log("Clicked reset filters!");
+        $("#projectfilterbuttons input.filter").prop("checked", false);
+        updateAll();
+    });
 
     function log(msg) {
         var logging = false;
@@ -208,5 +242,35 @@ $(document).ready(function () {
             console.log("* " + msg)
         }
     }
+
+    $('#collapseModality').on('show.bs.collapse', function () {
+        $('#modality-chevron').removeClass('fa-chevron-circle-right');
+        $('#modality-chevron').addClass('fa-chevron-circle-down');
+    });
+
+    $('#collapseModality').on('hide.bs.collapse', function () {
+        $('#modality-chevron').removeClass('fa-chevron-circle-down');
+        $('#modality-chevron').addClass('fa-chevron-circle-right');
+    });
+
+    $('#collapseTask').on('show.bs.collapse', function () {
+        $('#task-chevron').removeClass('fa-chevron-circle-right');
+        $('#task-chevron').addClass('fa-chevron-circle-down');
+    });
+
+    $('#collapseTask').on('hide.bs.collapse', function () {
+        $('#task-chevron').removeClass('fa-chevron-circle-down');
+        $('#task-chevron').addClass('fa-chevron-circle-right');
+    });
+
+    $('#collapseStructure').on('show.bs.collapse', function () {
+        $('#structure-chevron').removeClass('fa-chevron-circle-right');
+        $('#structure-chevron').addClass('fa-chevron-circle-down');
+    });
+
+    $('#collapseStructure').on('hide.bs.collapse', function () {
+        $('#structure-chevron').removeClass('fa-chevron-circle-down');
+        $('#structure-chevron').addClass('fa-chevron-circle-right');
+    });
 
 });

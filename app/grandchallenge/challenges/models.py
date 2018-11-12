@@ -2,14 +2,14 @@ import datetime
 import hashlib
 import logging
 import os
+import re
 
 from django.conf import settings
 from django.contrib.auth.models import Group
-from django.contrib.postgres.fields import CICharField
+from django.contrib.postgres.fields import CICharField, ArrayField
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_slug
 from django.db import models
-from django.db.models import Q
 from django.utils._os import safe_join
 from guardian.shortcuts import assign_perm, remove_perm
 from guardian.utils import get_anonymous_user
@@ -64,6 +64,11 @@ class TaskType(models.Model):
     def __str__(self):
         return self.type
 
+    @property
+    def filter_tag(self):
+        cls = re.sub(r"\W+", "", self.type)
+        return f"task-{cls}"
+
 
 class ImagingModality(models.Model):
     """ Stores the modality options, eg, MR, CT, PET, XR """
@@ -76,6 +81,11 @@ class ImagingModality(models.Model):
     def __str__(self):
         return self.modality
 
+    @property
+    def filter_tag(self):
+        cls = re.sub(r"\W+", "", self.modality)
+        return f"modality-{cls}"
+
 
 class BodyRegion(models.Model):
     """ Stores the anatomy options, eg, Head, Neck, Thorax, etc """
@@ -87,6 +97,11 @@ class BodyRegion(models.Model):
 
     def __str__(self):
         return self.region
+
+    @property
+    def filter_tag(self):
+        cls = re.sub(r"\W+", "", self.region)
+        return f"region-{cls}"
 
 
 class BodyStructure(models.Model):
@@ -102,6 +117,11 @@ class BodyStructure(models.Model):
 
     def __str__(self):
         return f"{self.structure} ({self.region})"
+
+    @property
+    def filter_tag(self):
+        cls = re.sub(r"\W+", "", self.structure)
+        return f"structure-{cls}"
 
 
 class ChallengeBase(models.Model):
@@ -168,39 +188,6 @@ class ChallengeBase(models.Model):
         null=True,
         help_text="Website of the event which will host the workshop",
     )
-    is_open_for_submissions = models.BooleanField(
-        default=False,
-        help_text=(
-            "This project currently accepts new submissions. "
-            "Affects listing in projects overview"
-        ),
-    )
-    number_of_submissions = models.IntegerField(
-        blank=True,
-        null=True,
-        help_text=(
-            "The number of submissions have been evalutated for this project"
-        ),
-    )
-    last_submission_date = models.DateField(
-        null=True,
-        blank=True,
-        help_text="When was the last submission evaluated?",
-    )
-    offers_data_download = models.BooleanField(
-        default=False,
-        help_text=(
-            "This project currently accepts new submissions. Affects listing "
-            "in projects overview"
-        ),
-    )
-    number_of_downloads = models.IntegerField(
-        blank=True,
-        null=True,
-        help_text=(
-            "How often has the dataset for this project been downloaded?"
-        ),
-    )
     publication_url = models.URLField(
         blank=True,
         null=True,
@@ -217,7 +204,21 @@ class ChallengeBase(models.Model):
             "journal abbreviations</a> format"
         ),
     )
-
+    publication_citation_count = models.PositiveIntegerField(
+        blank=True,
+        default=0,
+        help_text="The number of citations for the publication",
+    )
+    publication_google_scholar_id = models.BigIntegerField(
+        blank=True,
+        null=True,
+        help_text=(
+            "The ID of the article in google scholar. For instance, setting "
+            "this to 5362332738201102290, which the ID for LeCun et al. "
+            "in Nature 2015, and corresponds to the url"
+            "https://scholar.google.com/scholar?cluster=5362332738201102290"
+        ),
+    )
     data_license_agreement = models.TextField(
         blank=True,
         help_text="What is the data license agreement for this challenge?",
@@ -239,6 +240,9 @@ class ChallengeBase(models.Model):
 
     number_of_training_cases = models.IntegerField(blank=True, null=True)
     number_of_test_cases = models.IntegerField(blank=True, null=True)
+    filter_classes = ArrayField(
+        CICharField(max_length=32), default=list, editable=False
+    )
 
     objects = ChallengeManager()
 
@@ -255,10 +259,6 @@ class ChallengeBase(models.Model):
                 f"https://www.gravatar.com/avatar/"
                 f"{hashlib.md5(self.creator.email.lower().encode()).hexdigest()}"
             )
-
-    @property
-    def submission_url(self):
-        raise NotImplementedError
 
     def get_absolute_url(self):
         raise NotImplementedError
@@ -279,24 +279,29 @@ class ChallengeBase(models.Model):
         if self.workshop_date and self.workshop_date > datetime.date.today():
             return self.workshop_date
 
-    def get_link_classes(self):
+    def get_filter_classes(self):
         """
-        Copied from grandchallenge_tags
-
-        For adding this as id, for jquery filtering later on
-        returns a space separated list of classes to use in html
+        Warning! Do not call this directly, it takes a while. This is used
+        in a background task.
         """
-        classes = []
+        classes = set()
 
-        if self.is_open_for_submissions:
-            classes.append("open")
+        classes.add(self.get_host_id())
 
-        if self.offers_data_download:
-            classes.append("datadownload")
+        # Filter by modality
+        for mod in self.modalities.all():
+            classes.add(mod.filter_tag)
 
-        classes.append(self.get_host_id())
+        # Filter by body region and structure
+        for struc in self.structures.all():
+            classes.add(struc.region.filter_tag)
+            classes.add(struc.filter_tag)
 
-        return " ".join(classes)
+        # Filter by task type
+        for tas in self.task_types.all():
+            classes.add(tas.filter_tag)
+
+        return list(classes)
 
     def get_host_id(self):
         """
@@ -332,13 +337,6 @@ class ChallengeBase(models.Model):
             return None
 
         return f"<a href={framework_url}>{framework_name}</a>"
-
-    def get_submission_link(self):
-        """ Copied from grandchallenge tags """
-        if self.submission_url:
-            return self.submission_url
-        else:
-            return self.get_absolute_url()
 
     class Meta:
         abstract = True
@@ -428,16 +426,13 @@ class Challenge(ChallengeBase):
         on_delete=models.CASCADE,
         related_name="participants_of_challenge",
     )
-    submission_page_name = models.CharField(
-        blank=True,
-        null=True,
-        max_length=255,
-        help_text=(
-            "If the project allows submissions, there will be a link in "
-            "projects overview going directly to you "
-            "project/<submission_page_name>/. If empty, the projects main "
-            "page will be used instead"
-        ),
+
+    cached_num_participants = models.PositiveIntegerField(
+        editable=False, default=0
+    )
+    cached_num_results = models.PositiveIntegerField(editable=False, default=0)
+    cached_latest_result = models.DateTimeField(
+        editable=False, blank=True, null=True
     )
 
     # TODO check whether short name is really clean and short!
@@ -478,18 +473,6 @@ class Challenge(ChallengeBase):
         """
         return self.short_name + "_participants"
 
-    def get_relevant_perm_groups(self):
-        """
-        Return all auth groups which are directly relevant for this ComicSite.
-        This method is used for showin permissions for these groups, even
-        if none are defined
-        """
-        return Group.objects.filter(
-            Q(name=settings.EVERYONE_GROUP_NAME)
-            | Q(pk=self.admins_group.pk)
-            | Q(pk=self.participants_group.pk)
-        )
-
     def is_admin(self, user) -> bool:
         """
         is user in the admins group for the comicsite to which this object
@@ -522,24 +505,6 @@ class Challenge(ChallengeBase):
         """ With this method, admin will show a 'view on site' button """
         return reverse("challenge-homepage", args=[self.short_name])
 
-    @property
-    def submission_url(self):
-        """ What url can you go to to submit for this project? """
-        url = reverse("challenge-homepage", args=[self.short_name])
-        if self.submission_page_name:
-            if self.submission_page_name.startswith(
-                "http://"
-            ) or self.submission_page_name.startswith("https://"):
-                # the url in the submission page box is a full url
-                return self.submission_page_name
-
-            else:
-                page = self.submission_page_name
-                if not page.endswith("/"):
-                    page += "/"
-                url += page
-        return url
-
     def add_participant(self, user):
         if user != get_anonymous_user():
             user.groups.add(self.participants_group)
@@ -567,15 +532,6 @@ class ExternalChallenge(ChallengeBase):
     homepage = models.URLField(
         blank=False, help_text=("What is the homepage for this challenge?")
     )
-    submission_page = models.URLField(
-        blank=True,
-        help_text=("Where is the submissions page for this challenge?"),
-    )
-    download_page = models.URLField(
-        blank=True,
-        help_text=("Where is the download page for this challenge?"),
-    )
-
     data_stored = models.BooleanField(
         default=False,
         help_text=("Has the grand-challenge team stored the data?"),
@@ -583,10 +539,6 @@ class ExternalChallenge(ChallengeBase):
 
     def get_absolute_url(self):
         return self.homepage
-
-    @property
-    def submission_url(self):
-        return self.submission_page
 
     @property
     def hosted_on_comic(self):
@@ -625,15 +577,9 @@ class ComicSiteModel(models.Model):
 
     def can_be_viewed_by(self, user):
         """ boolean, is user allowed to view this? """
-        # check whether everyone is allowed to view this. Anymous user is the
-        # only member of group 'everyone' for which permissions can be set
-        anonymous_user = get_anonymous_user()
-        if anonymous_user.has_perm("view_ComicSiteModel", self):
+        if self.permission_lvl == self.ALL:
             return True
-
         else:
-            # if not everyone has access,
-            # check whether given user has permissions
             return user.has_perm("view_ComicSiteModel", self)
 
     def setpermissions(self, lvl):
@@ -641,20 +587,16 @@ class ComicSiteModel(models.Model):
             object needs to be saved before setting perms"""
         admingroup = self.challenge.admins_group
         participantsgroup = self.challenge.participants_group
-        everyonegroup = Group.objects.get(name=settings.EVERYONE_GROUP_NAME)
         self.persist_if_needed()
         if lvl == self.ALL:
             assign_perm("view_ComicSiteModel", admingroup, self)
             assign_perm("view_ComicSiteModel", participantsgroup, self)
-            assign_perm("view_ComicSiteModel", everyonegroup, self)
         elif lvl == self.REGISTERED_ONLY:
             assign_perm("view_ComicSiteModel", admingroup, self)
             assign_perm("view_ComicSiteModel", participantsgroup, self)
-            remove_perm("view_ComicSiteModel", everyonegroup, self)
         elif lvl == self.ADMIN_ONLY:
             assign_perm("view_ComicSiteModel", admingroup, self)
             remove_perm("view_ComicSiteModel", participantsgroup, self)
-            remove_perm("view_ComicSiteModel", everyonegroup, self)
         else:
             raise ValueError(
                 f"Unknown permissions level '{lvl}'. "

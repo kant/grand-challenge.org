@@ -145,19 +145,14 @@ class Command(BaseCommand):
             }
             demo.evaluation_config.save()
 
-            ExternalChallenge.objects.create(
+            ex_challenge = ExternalChallenge.objects.create(
                 creator=demoadmin,
                 homepage="https://www.example.com",
                 short_name="EXAMPLE2018",
                 title="Example External Challenge 2018",
                 description="An example of an external challenge",
-                is_open_for_submissions=True,
                 event_name="Example Event",
                 event_url="https://www.example.com/2018",
-                offers_data_download=True,
-                download_page="https://www.example.com/2018/download",
-                number_of_downloads=1337,
-                number_of_submissions=10,
                 publication_journal_name="Nature",
                 publication_url="https://doi.org/10.1038/s41586-018-0367-9",
                 hidden=False,
@@ -187,10 +182,10 @@ class Command(BaseCommand):
                 "MR",
                 "XR",
                 "PET",
-                "PET/CT",
-                "PET/MR",
+                "PET-CT",
+                "PET-MR",
                 "Mammography",
-                "CT/MR",
+                "CT-MR",
                 "US",
                 "TEM",
                 "Histology",
@@ -198,3 +193,7 @@ class Command(BaseCommand):
 
             for modality in modalities:
                 ImagingModality.objects.create(modality=modality)
+
+            mr_modality = ImagingModality.objects.get(modality="MR")
+            ex_challenge.modalities.add(mr_modality)
+            ex_challenge.save()
