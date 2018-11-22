@@ -115,6 +115,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     group_add:
       - 999
+      - 0  # be careful with this. do not commit that!
 
   celery_beat:
     image: grandchallenge/web-test:latest

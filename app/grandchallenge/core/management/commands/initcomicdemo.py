@@ -138,10 +138,10 @@ class Command(BaseCommand):
                 job=job2,
             )
 
-            demo.evaluation_config.score_jsonpath = "acc"
+            demo.evaluation_config.score_jsonpath = "aggregates.dice_coefficient.mean"
             demo.evaluation_config.details_results_columns = {
-                "Dice": "case.dice",
-                "Accuracy": "case.acc",
+                "Dice": "case.dice_coefficient",
+                "Filename": "case.filename_prediction",
             }
             demo.evaluation_config.save()
 
