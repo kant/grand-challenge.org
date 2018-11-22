@@ -112,6 +112,11 @@ class Command(BaseCommand):
             job = Job.objects.create(submission=submission, method=method)
             job2 = Job.objects.create(submission=submission2, method=method)
 
+            '''
+            "acc": {"mean": 0.5, "std": 0.1},
+            "dice": {"mean": 0.71, "std": 0.05},
+            '''
+
             Result.objects.create(
                 challenge=demo,
                 metrics={
@@ -120,11 +125,11 @@ class Command(BaseCommand):
                     "case": {
                         "dice": {"0": 0.3, "1": 0.8, "2": 0.7},
                         "acc": {"0": 0.4, "1": 0.9, "2": 0.6},
-                    },
-                },
+                    },},
                 job=job,
             )
 
+            '''
             Result.objects.create(
                 challenge=demo,
                 metrics={
@@ -143,6 +148,19 @@ class Command(BaseCommand):
                 "Dice": "case.dice_coefficient",
                 "Filename": "case.filename_prediction",
             }
+            '''
+            demo.evaluation_config.score_title = "Accuracy ± std"
+            demo.evaluation_config.score_jsonpath = "acc.mean"
+            demo.evaluation_config.score_error_jsonpath = "acc.std"
+            demo.evaluation_config.extra_results_columns = [
+                {
+                    "title": "Dice ± std",
+                    "path": "dice.mean",
+                    "error_path": "dice.std",
+                    "order": "desc",
+                }
+            ]
+
             demo.evaluation_config.save()
 
             ex_challenge = ExternalChallenge.objects.create(
