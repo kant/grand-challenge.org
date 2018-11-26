@@ -117,6 +117,23 @@ services:
       - 999
       - 0  # be careful with this. do not commit that!
 
+  celery_worker_gpu:
+    image: grandchallenge/web-test:latest
+    environment:
+      <<: *postgresenv
+    restart: always
+    command: "celery -A config worker -l info -Q gpu -c 1"
+    scale: 1
+    depends_on:
+      web:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes_from:
+      - web
+
   celery_beat:
     image: grandchallenge/web-test:latest
     environment:
