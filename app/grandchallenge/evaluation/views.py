@@ -291,7 +291,9 @@ class ResultDetail(DetailView):
             "job__submission__creator__user_profile"
         )
         return queryset.filter(
-            Q(challenge=self.request.challenge), Q(public=True)
+
+            Q(challenge=self.request.challenge),
+            Q(published=True), # public is changed to published?
         )
 
     def get_context_data(self, **kwargs):
