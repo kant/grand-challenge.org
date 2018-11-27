@@ -116,25 +116,51 @@ class Command(BaseCommand):
             Result.objects.create(
                 challenge=demo,
                 metrics={
+                    "acc": 0.5,
+                    "dice": 0.7,
+                    "case": {
+                        "dice": {"0": 0.3, "1": 0.8, "2": 0.7},
+                        "acc": {"0": 0.4, "1": 0.9, "2": 0.6},
+                    },},
+                job=job2,
+            )
+
+
+            Result.objects.create(
+                challenge=demo,
+                metrics={
                     "acc": {"mean": 0.5, "std": 0.1},
                     "dice": {"mean": 0.71, "std": 0.05},
                 },
                 job=job,
             )
 
-            demo.evaluation_config.score_title = "Accuracy ± std"
-            demo.evaluation_config.score_jsonpath = "acc.mean"
-            demo.evaluation_config.score_error_jsonpath = "acc.std"
+            demo.evaluation_config.score_title = "Gabriels Challenge"
+            demo.evaluation_config.score_jsonpath = "aggregates.dice_coefficient.mean"
+            demo.evaluation_config.score_error_jsonpath = "aggregates.dice_coefficient.std"
             demo.evaluation_config.extra_results_columns = [
                 {
-                    "title": "Dice ± std",
-                    "path": "dice.mean",
-                    "error_path": "dice.std",
+                    "title": "volume_similarity ± std",
+                    "path": "aggregates.volume_similarity.mean",
+                    "error_path": "aggregates.volume_similarity.std",
                     "order": "desc",
                 }
             ]
-
             demo.evaluation_config.save()
+
+            # demo.evaluation_config.score_title = "Accuracy ± std"
+            # demo.evaluation_config.score_jsonpath = "acc.mean"
+            # demo.evaluation_config.score_error_jsonpath = "acc.std"
+            # demo.evaluation_config.extra_results_columns = [
+            #     {
+            #         "title": "Dice ± std",
+            #         "path": "dice.mean",
+            #         "error_path": "dice.std",
+            #         "order": "desc",
+            #     }
+            # ]
+
+
 
             #
             # Result.objects.create(
