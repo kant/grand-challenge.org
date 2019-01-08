@@ -196,7 +196,6 @@ class Config(UUIDModel):
             '{"Accuracy": "aggregates.acc","Dice": "dice.mean"}'
         ),
     )
-
     extra_results_columns = JSONField(
         default=list,
         blank=True,
@@ -212,14 +211,12 @@ class Config(UUIDModel):
         default=ABSOLUTE,
         help_text=("How should the rank of each result be calculated?"),
     )
-
     result_display_choice = models.CharField(
         max_length=3,
         choices=RESULT_DISPLAY_CHOICES,
         default=ALL,
         help_text=("Which results should be displayed on the leaderboard?"),
     )
-
     allow_submission_comments = models.BooleanField(
         default=False,
         help_text=(

@@ -11,7 +11,6 @@ from grandchallenge.core.permissions.mixins import (
     UserIsChallengeAdminMixin,
     UserIsChallengeParticipantOrAdminMixin,
 )
-from grandchallenge.subdomains.utils import reverse
 from grandchallenge.evaluation.forms import (
     MethodForm,
     SubmissionForm,
@@ -25,10 +24,11 @@ from grandchallenge.evaluation.models import (
     Method,
     Config,
 )
-
-
+from grandchallenge.evaluation.templatetags.evaluation_extras import (
+    get_jsonpath
+)
 from grandchallenge.jqfileupload.widgets.uploader import StagedAjaxFile
-
+from grandchallenge.subdomains.utils import reverse
 
 
 class ConfigUpdate(UserIsChallengeAdminMixin, SuccessMessageMixin, UpdateView):
@@ -282,7 +282,6 @@ class ResultList(ListView):
 
 
 class ResultDetail(DetailView):
-
     model = Result
 
     def get_queryset(self):
@@ -291,9 +290,7 @@ class ResultDetail(DetailView):
             "job__submission__creator__user_profile"
         )
         return queryset.filter(
-
-            Q(challenge=self.request.challenge),
-            Q(published=True), # public is changed to published?
+            Q(challenge=self.request.challenge), Q(published=True)
         )
 
     def get_context_data(self, **kwargs):
