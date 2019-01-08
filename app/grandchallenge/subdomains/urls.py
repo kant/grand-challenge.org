@@ -13,7 +13,6 @@ urlpatterns = [
         ),
         name="comicsite_robots_txt",
     ),
-    # Note: add new namespaces to comic_URLNode(defaulttags.URLNode)
     path(
         "evaluation/",
         include("grandchallenge.evaluation.urls", namespace="evaluation"),
