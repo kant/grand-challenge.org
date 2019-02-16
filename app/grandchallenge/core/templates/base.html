@@ -7,39 +7,41 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    {% block html_header %}
-        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title>
-            {% block pageName %}{{ main_challenge_name }}{% endblock %}</title>
-        <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no'
-              name='viewport'/>
-        <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
-        <meta name="description"
-              content="{{ site.description }}"/>
-        <meta name="keywords"
-              content="open, science, medical, image, computing, validated"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>
+        {% block pageName %}
+            {{ main_challenge_name }}
+        {% endblock %}
+    </title>
+    <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no'
+          name='viewport'/>
+    <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+    <meta name="description"
+          content="{{ site.description }}"/>
+    <meta name="keywords"
+          content="open, science, medical, image, computing, validated"/>
 
-        {% placeFavicon %}
+    {% placeFavicon %}
 
-        <script src="{% static "assets/js/plugin/webfont/webfont.min.js" %}"></script>
-        <script>
-            WebFont.load({
-                google: {"families": ["Lato:300,400,700,900"]},
-                custom: {
-                    "families": ["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"],
-                    urls: ["{% static "assets/css/fonts.min.css" %}"]
-                },
-                active: function () {
-                    sessionStorage.fonts = true;
-                }
-            });
-        </script>
+    <script src="{% static "atlantis/js/plugin/webfont/webfont.min.js" %}"></script>
+    <script>
+        WebFont.load({
+            google: {"families": ["Lato:300,400,700,900"]},
+            custom: {
+                "families": ["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"],
+                urls: ["{% static "atlantis/css/fonts.min.css" %}"]
+            },
+            active: function () {
+                sessionStorage.fonts = true;
+            }
+        });
+    </script>
 
-        <link rel="stylesheet"
-              href={% static "assets/css/bootstrap.min.css" %}>
-        <link rel="stylesheet" href="{% static "assets/css/atlantis.min.css" %}">
+    <link rel="stylesheet"
+          href={% static "atlantis/css/bootstrap.min.css" %}>
+    <link rel="stylesheet" href="{% static "atlantis/css/atlantis.min.css" %}">
 
-        {% comment %}
+    {% comment %}
             <script src="https://cdn.ravenjs.com/3.23.2/raven.min.js"
                     crossorigin="anonymous"></script>
             <script>Raven.config('{% sentry_public_dsn %}').install()</script>
@@ -141,8 +143,6 @@
             {% block additionalCSS %}{% endblock %}
         </style>
         {%  endcomment %}
-
-    {% endblock %}
 
     <!-- Global Site Tag (gtag.js) - Google Analytics -->
     <script async
@@ -312,42 +312,42 @@
 {% endblock %}
 
 <!--   Core JS Files   -->
-<script src="{% static "assets/js/core/jquery.3.2.1.min.js" %}"></script>
-<script src="{% static "assets/js/core/popper.min.js" %}"></script>
-<script src="{% static "assets/js/core/bootstrap.min.js" %}"></script>
+<script src="{% static "atlantis/js/core/jquery.3.2.1.min.js" %}"></script>
+<script src="{% static "atlantis/js/core/popper.min.js" %}"></script>
+<script src="{% static "atlantis/js/core/bootstrap.min.js" %}"></script>
 
 <!-- jQuery UI -->
-<script src="{% static "assets/js/plugin/jquery-ui-1.12.1.custom/jquery-ui.min.js" %}"></script>
-<script src="{% static "assets/js/plugin/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js" %}"></script>
+<script src="{% static "atlantis/js/plugin/jquery-ui-1.12.1.custom/jquery-ui.min.js" %}"></script>
+<script src="{% static "atlantis/js/plugin/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js" %}"></script>
 
 <!-- jQuery Scrollbar -->
-<script src="{% static "assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js" %}"></script>
+<script src="{% static "atlantis/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js" %}"></script>
 
 
 <!-- Chart JS -->
-<script src="{% static "assets/js/plugin/chart.js/chart.min.js" %}"></script>
+<script src="{% static "atlantis/js/plugin/chart.js/chart.min.js" %}"></script>
 
 <!-- jQuery Sparkline -->
-<script src="{% static "assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js" %}"></script>
+<script src="{% static "atlantis/js/plugin/jquery.sparkline/jquery.sparkline.min.js" %}"></script>
 
 <!-- Chart Circle -->
-<script src="{% static "assets/js/plugin/chart-circle/circles.min.js" %}"></script>
+<script src="{% static "atlantis/js/plugin/chart-circle/circles.min.js" %}"></script>
 
 <!-- Datatables -->
-<script src="{% static "assets/js/plugin/datatables/datatables.min.js" %}"></script>
+<script src="{% static "atlantis/js/plugin/datatables/datatables.min.js" %}"></script>
 
 <!-- Bootstrap Notify -->
-<script src="{% static "assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js" %}"></script>
+<script src="{% static "atlantis/js/plugin/bootstrap-notify/bootstrap-notify.min.js" %}"></script>
 
 <!-- jQuery Vector Maps -->
-<script src="{% static "assets/js/plugin/jqvmap/jquery.vmap.min.js" %}"></script>
-<script src="{% static "assets/js/plugin/jqvmap/maps/jquery.vmap.world.js" %}"></script>
+<script src="{% static "atlantis/js/plugin/jqvmap/jquery.vmap.min.js" %}"></script>
+<script src="{% static "atlantis/js/plugin/jqvmap/maps/jquery.vmap.world.js" %}"></script>
 
 <!-- Sweet Alert -->
-<script src="{% static "assets/js/plugin/sweetalert/sweetalert.min.js" %}"></script>
+<script src="{% static "atlantis/js/plugin/sweetalert/sweetalert.min.js" %}"></script>
 
 <!-- Atlantis JS -->
-<script src="{% static "assets/js/atlantis.min.js" %}"></script>
+<script src="{% static "atlantis/js/atlantis.min.js" %}"></script>
 
 {% block postjs %}
 
