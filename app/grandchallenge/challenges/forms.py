@@ -49,6 +49,7 @@ registration_items = (
     "require_participant_review",
     "registration_page_text",
 )
+style_items = ("navbar_colour", "sidebar_colour", "background_colour")
 
 
 class ChallengeUpdateForm(forms.ModelForm):
@@ -59,6 +60,7 @@ class ChallengeUpdateForm(forms.ModelForm):
             TabHolder(
                 Tab("Information", *common_information_items, "disclaimer"),
                 Tab("Images", "banner", *common_images_items),
+                Tab("Styles", *style_items),
                 Tab("Event", *event_items),
                 Tab("Registration", *registration_items),
                 Tab("Automated Evaluation", "use_evaluation"),
@@ -74,6 +76,7 @@ class ChallengeUpdateForm(forms.ModelForm):
             "disclaimer",
             "banner",
             *common_images_items,
+            *style_items,
             *event_items,
             *registration_items,
             "use_evaluation",

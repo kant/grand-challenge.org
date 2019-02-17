@@ -124,12 +124,13 @@
             crossorigin="anonymous"></script>
 
 </head>
-<body data-background-color="bg1">
+<body data-background-color="{% firstof site.background_colour 'bg1' %}">
 
 <div class="wrapper">
     <div class="main-header">
         <!-- Logo Header -->
-        <div class="logo-header" data-background-color="blue2">
+        <div class="logo-header"
+             data-background-color="{% firstof site.navbar_colour 'blue2' %}">
             <a class="logo text-capitalize font-weight-bold"
                href="{% url 'home' %}">
                 {{ main_challenge_name }}
@@ -153,7 +154,7 @@
 
         <!-- Navbar Header -->
         <nav class="navbar navbar-header navbar-expand-lg"
-             data-background-color="blue2">
+             data-background-color="{% firstof site.navbar_colour 'blue2' %}">
 
             <div class="container-fluid">
                 <ul class="navbar-nav topbar-nav ml-md-auto align-items-center">
@@ -221,7 +222,8 @@
     </div>
 
     <!-- Sidebar -->
-    <div class="sidebar sidebar-style-2">
+    <div class="sidebar sidebar-style-1"
+         data-background-color="{% firstof site.sidebar_colour 'white' %}">
         <div class="sidebar-wrapper scrollbar scrollbar-inner">
             <div class="sidebar-content">
                 <ul class="nav nav-primary">

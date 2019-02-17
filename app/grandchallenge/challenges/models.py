@@ -346,6 +346,71 @@ class Challenge(ChallengeBase):
     edited.
     """
 
+    # The colour codes are defined by atlantis-bootstrap-light
+    BG_COLOUR_WHITE = "bg2"
+    BG_COLOUR_GREY1 = "bg1"
+    BG_COLOUR_GREY2 = "bg3"
+    BG_COLOUR_DARK = "dark"
+
+    BG_COLOUR_CHOICES = (
+        ("", "Inherit the default colour"),
+        (BG_COLOUR_WHITE, "White"),
+        (BG_COLOUR_GREY1, "Grey 1"),
+        (BG_COLOUR_GREY2, "Grey 2"),
+        (BG_COLOUR_DARK, "Dark"),
+    )
+
+    SIDEBAR_COLOUR_WHITE = "white"
+    SIDEBAR_COLOUR_DARK = "dark2"
+
+    SIDEBAR_COLOUR_CHOICES = (
+        ("", "Inherit the default colour"),
+        (SIDEBAR_COLOUR_WHITE, "White"),
+        (SIDEBAR_COLOUR_DARK, "Dark"),
+    )
+
+    NAVBAR_COLOUR_WHITE = "white"
+    NAVBAR_COLOUR_BLUE = "blue2"
+    NAVBAR_COLOUR_LIGHTBLUE = "light-blue2"
+    NAVBAR_COLOUR_PURPLE = "purple2"
+    NAVBAR_COLOUR_ORANGE = "orange2"
+    NAVBAR_COLOUR_GREEN = "green2"
+    NAVBAR_COLOUR_RED = "red2"
+    NAVBAR_COLOUR_DARK = "dark2"
+
+    NAVBAR_COLOUR_CHOICES = (
+        ("", "Inherit the default colour"),
+        (NAVBAR_COLOUR_WHITE, "White"),
+        (NAVBAR_COLOUR_BLUE, "Blue"),
+        (NAVBAR_COLOUR_LIGHTBLUE, "Light Blue"),
+        (NAVBAR_COLOUR_PURPLE, "Purple"),
+        (NAVBAR_COLOUR_ORANGE, "Orange"),
+        (NAVBAR_COLOUR_GREEN, "Green"),
+        (NAVBAR_COLOUR_RED, "Red"),
+        (NAVBAR_COLOUR_DARK, "Dark"),
+    )
+
+    background_colour = models.CharField(
+        blank=True,
+        default="",
+        max_length=4,
+        choices=BG_COLOUR_CHOICES,
+        help_text="The background colour of your challenge pages.",
+    )
+    sidebar_colour = models.CharField(
+        blank=True,
+        default="",
+        max_length=5,
+        choices=SIDEBAR_COLOUR_CHOICES,
+        help_text="The colour of the sidebar on your challenge pages.",
+    )
+    navbar_colour = models.CharField(
+        blank=True,
+        default="",
+        max_length=11,
+        choices=NAVBAR_COLOUR_CHOICES,
+        help_text="The colour of the navigation bar on your challenge pages.",
+    )
     public_folder = "public_html"
     skin = models.CharField(
         max_length=225,
