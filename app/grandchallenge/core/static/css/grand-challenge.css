@@ -33,3 +33,9 @@
     width: 100%;
     border-radius: 6px;
 }
+
+/* Correct padding for table-sm */
+.table-sm td, .table-sm th {
+    padding: .3rem!important;
+    height: inherit;
+}

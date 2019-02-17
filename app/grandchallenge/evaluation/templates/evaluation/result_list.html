@@ -9,7 +9,7 @@
     <h2>Results</h2>
 
     <div class="table-responsive">
-        <table class="table table-sm" id="resultsTable">
+        <table class="table table-sm table-hover" id="resultsTable">
             <thead>
             <tr>
                 <th>#</th>
@@ -244,7 +244,6 @@
                         }
                     ],
                 {% endif %}
-                scrollX: true
             });
             $('#resultsTable').on( 'column-visibility.dt', function ( e, settings, column, state ) {
                 var button = table.button(1).node();

@@ -172,7 +172,7 @@ class TagListNode(template.Node):
         pass
 
     def render(self, context):
-        html_out = '<table class ="comictable taglist">'
+        html_out = '<table class ="table table-sm">'
         html_out = html_out + "<tr><th>tagname</th><th>description</th></tr>"
         rowclass = "odd"
         for key, val in register.usagestrings.items():
