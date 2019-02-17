@@ -167,7 +167,8 @@
         <div class="logo-header" data-background-color="blue">
 
             <a href="index.html" class="logo">
-                <img src="{% static "atlantis/img/logo.svg"%}" alt="navbar brand"
+                <img src="{% static "atlantis/img/logo.svg" %}"
+                     alt="navbar brand"
                      class="navbar-brand">
             </a>
             <button class="navbar-toggler sidenav-toggler ml-auto"
@@ -427,7 +428,8 @@
                            data-toggle="dropdown" href="#"
                            aria-expanded="false">
                             <div class="avatar-sm">
-                                <img src="{% static "atlantis/img/profile.jpg" %}" alt="..."
+                                <img src="{% static "atlantis/img/profile.jpg" %}"
+                                     alt="..."
                                      class="avatar-img rounded-circle">
                             </div>
                         </a>
@@ -479,7 +481,8 @@
             <div class="sidebar-content">
                 <div class="user">
                     <div class="avatar-sm float-left mr-2">
-                        <img src="{% static "atlantis/img/profile.jpg" %}" alt="..."
+                        <img src="{% static "atlantis/img/profile.jpg" %}"
+                             alt="..."
                              class="avatar-img rounded-circle">
                     </div>
                     <div class="info">
@@ -515,6 +518,12 @@
                     </div>
                 </div>
                 <ul class="nav nav-primary">
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-home"></i>
+                            <p>Introduction</p>
+                        </a>
+                    </li>
                     <li class="nav-item active">
                         <a data-toggle="collapse" href="#dashboard"
                            class="collapsed" aria-expanded="false">
@@ -806,40 +815,33 @@
                 <div class="page-category">Inner page content goes here</div>
             </div>
         </div>
-        <footer class="footer">
-            <div class="container-fluid">
-                <nav class="pull-left">
-                    <ul class="nav">
-                        <li class="nav-item">
-                            <a class="nav-link"
-                               href="https://www.themekita.com">
-                                ThemeKita
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                Help
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                Licenses
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-                <div class="copyright ml-auto">
-                    2018, made with <i
-                        class="fa fa-heart heart text-danger"></i> by <a
-                        href="https://www.themekita.com">ThemeKita</a>
+
+        {% block footer %}
+            <footer class="footer">
+                <div class="container-fluid">
+                    <nav class="pull-left">
+                        <ul class="nav">
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   href="https://github.com/comic/grand-challenge.org"
+                                   title="Join us on Github">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <div class="copyright ml-auto text-capitalize">
+                        &copy; 2012-{% now "Y" %} {{ main_challenge_name }}
+                    </div>
                 </div>
-            </div>
-        </footer>
+            </footer>
+        {% endblock %}
+
     </div>
 
 </div>
 
-
+{% comment %}
 {% block topheader %}
     <nav class="navbar navbar-dark navbar-top navbar-expand-sm bg-dark">
 
@@ -968,26 +970,7 @@
     </div>
 </main>
 
-<!-- page -->
-{% block footer %}
-    <footer class="footer bg-secondary">
-        <div class="container">
-            <div class="row">
-                <div class="col-5"></div>
-                <div class="col-2 text-center">
-                    <a class="text-light"
-                       href="https://github.com/comic/grand-challenge.org"
-                       title="Join us on Github">
-                        <i class="fab fa-github"></i></a>
-                </div>
-                <div class="col-5 small text-light text-right text-capitalize">
-                    &copy; 2012-{% now "Y" %} {{ main_challenge_name }}
-                </div>
-
-            </div>
-        </div>
-    </footer>
-{% endblock %}
+{% endcomment %}
 
 <!--   Core JS Files   -->
 <script src="{% static "atlantis/js/core/jquery.3.2.1.min.js" %}"></script>
