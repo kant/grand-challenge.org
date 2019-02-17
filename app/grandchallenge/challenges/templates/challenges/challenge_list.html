@@ -16,7 +16,7 @@
 
     <form class="d-none">
         <!--Hidden checkbox to display all projectlinks by default -->
-        <label class="checkbox-inline font-weight-bold">
+        <label class="form-check-label">
             <input type="checkbox" class="include projectfilterbutton"
                    checked disabled
                    id="projectlink">
@@ -32,25 +32,26 @@
             <p>Host</p>
             <span class="caret"></span>
         </a>
-        <div id="collapseHost" class="collapse"
-             data-parent="#accordion">
-            <div class="card-body">
-                <form>
+        <div id="collapseHost" class="collapse">
+            <form>
+                <ul>
                     {% for host in hosts %}
-                        {# Note that the host filter works slightly differently as we have no filter_tag attribute #}
-                        <label id="{{ host.filter_tag }}"
-                               class="checkbox-inline font-weight-bold">
-                            <input type="checkbox"
-                                   class="filter projectfilterbutton"
-                                   value="{{ host.host }}"
-                                   id="{{ host.filter_tag }}">
-                            <span>{{ host.host }}</span><span
-                                class="counter ml-1 badge badge-pill badge-info"
-                                id="{{ host.filter_tag }}"></span>
-                        </label><br>
+                        <li>
+                            {# Note that the host filter works slightly differently as we have no filter_tag attribute #}
+                            <label id="{{ host.filter_tag }}"
+                                   class="form-check-label">
+                                <input type="checkbox"
+                                       class="filter projectfilterbutton"
+                                       value="{{ host.host }}"
+                                       id="{{ host.filter_tag }}">
+                                <span>{{ host.host }}</span><span
+                                    class="counter ml-1 badge badge-pill badge-info"
+                                    id="{{ host.filter_tag }}"></span>
+                            </label>
+                        </li>
                     {% endfor %}
-                </form>
-            </div>
+                </ul>
+            </form>
         </div>
     </li>
 
@@ -63,24 +64,25 @@
             <p>Modality</p>
             <span class="caret"></span>
         </a>
-        <div id="collapseModality" class="collapse"
-             data-parent="#accordion">
-            <div class="card-body">
-                <form>
+        <div id="collapseModality" class="collapse">
+            <form>
+                <ul>
                     {% for modality in modalities %}
-                        <label id="{{ modality.filter_tag }}"
-                               class="checkbox-inline font-weight-bold">
-                            <input type="checkbox"
-                                   class="filter projectfilterbutton"
-                                   value="{{ modality.modality }}"
-                                   id="{{ modality.filter_tag }}">
-                            <span>{{ modality.modality }}</span><span
-                                class="counter ml-1 badge badge-pill badge-info"
-                                id="{{ modality.filter_tag }}"></span>
-                        </label><br>
+                        <li>
+                            <label id="{{ modality.filter_tag }}"
+                                   class="form-check-label">
+                                <input type="checkbox"
+                                       class="filter projectfilterbutton"
+                                       value="{{ modality.modality }}"
+                                       id="{{ modality.filter_tag }}">
+                                <span>{{ modality.modality }}</span><span
+                                    class="counter ml-1 badge badge-info"
+                                    id="{{ modality.filter_tag }}"></span>
+                            </label>
+                        </li>
                     {% endfor %}
-                </form>
-            </div>
+                </ul>
+            </form>
         </div>
     </li>
 
@@ -92,25 +94,26 @@
             <p>Task type</p>
             <span class="caret"></span>
         </a>
-        <div id="collapseTask" class="collapse"
-             data-parent="#accordion">
-            <div class="card-body">
-                <form>
+        <div id="collapseTask" class="collapse">
+            <form>
+                <ul>
                     {% for task in task_types %}
-                        <label id="{{ task.filter_tag }}"
-                               class="checkbox-inline font-weight-bold">
-                            <input type="checkbox"
-                                   class="filter projectfilterbutton"
-                                   id="{{ task.filter_tag }}"
-                                   value="{{ task.type }}">
-                            <span>{{ task.type }}</span>
-                            <span
-                                    class="counter ml-1 badge badge-pill badge-info"
-                                    id="{{ task.filter_tag }}"></span>
-                        </label><br>
+                        <li>
+                            <label id="{{ task.filter_tag }}"
+                                   class="">
+                                <input type="checkbox"
+                                       class="filter projectfilterbutton"
+                                       id="{{ task.filter_tag }}"
+                                       value="{{ task.type }}">
+                                <span>{{ task.type }}</span>
+                                <span
+                                        class="counter ml-1 badge badge-pill badge-info"
+                                        id="{{ task.filter_tag }}"></span>
+                            </label>
+                        </li>
                     {% endfor %}
-                </form>
-            </div>
+                </ul>
+            </form>
         </div>
     </li>
 
@@ -123,45 +126,48 @@
             <p>Structure</p>
             <span class="caret"></span>
         </a>
-        <div id="collapseStructure" class="collapse"
-             data-parent="#accordion">
-            <div class="card-body">
-                {% for r in body_regions %}
+        <div id="collapseStructure" class="collapse">
+            <form>
+                <ul>
+                    {% for r in body_regions %}
+                        <li>
+                            <label id="{{ r.filter_tag }}"
+                                   class="form-check-label">
+                                <input type="checkbox"
+                                       class="filter projectfilterbutton"
+                                       id="{{ r.filter_tag }}"
+                                       value="{{ r.region }}">
+                                <span>{{ r.region }}</span>
+                                <span
+                                        class="counter ml-1 badge badge-pill badge-info"
+                                        id="{{ r.filter_tag }}"></span>
+                            </label>
+                            <ul>
+                                {% for s in r.bodystructure_set.all %}
+                                    <li>
+                                        <label id="{{ s.filter_tag }}"
+                                               class="form-check-label">
+                                            <input type="checkbox"
+                                                   class="filter projectfilterbutton"
+                                                   id="{{ s.filter_tag }}"
+                                                   value="{{ s.structure }}">
+                                            <span>{{ s.structure }}</span>
+                                            <span
+                                                    class="counter ml-1 badge badge-pill badge-info"
+                                                    id="{{ s.filter_tag }}"></span>
+                                        </label>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </form>
 
-                    <label id="{{ r.filter_tag }}"
-                           class="checkbox-inline font-weight-bold">
-                        <input type="checkbox"
-                               class="filter projectfilterbutton"
-                               id="{{ r.filter_tag }}"
-                               value="{{ r.region }}">
-                        <span>{{ r.region }}</span>
-                        <span
-                                class="counter ml-1 badge badge-pill badge-info"
-                                id="{{ r.filter_tag }}"></span>
-                    </label>
-                    <div class="ml-3">
-                        <form>
-                            {% for s in r.bodystructure_set.all %}
-                                <label id="{{ s.filter_tag }}"
-                                       class="checkbox-inline font-weight-bold">
-                                    <input type="checkbox"
-                                           class="filter projectfilterbutton"
-                                           id="{{ s.filter_tag }}"
-                                           value="{{ s.structure }}">
-                                    <span>{{ s.structure }}</span>
-                                    <span
-                                            class="counter ml-1 badge badge-pill badge-info"
-                                            id="{{ s.filter_tag }}"></span>
-                                </label>
-                                <br>
-                            {% endfor %}
-                        </form>
-                    </div>
-                {% endfor %}
-
-            </div>
         </div>
     </li>
+
+    <li class="nav-section"></li>
 
     <li class="nav-item text-center">
     <span id="info"
