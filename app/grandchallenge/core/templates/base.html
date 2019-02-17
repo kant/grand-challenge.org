@@ -223,7 +223,8 @@
 
     <!-- Sidebar -->
     <div class="sidebar sidebar-style-1"
-         data-background-color="{% firstof site.sidebar_colour 'white' %}">
+         data-background-color="{% if site.sidebar_colour == 'dark2' %}dark2{% endif %}">
+        {# there is a bug in the css lib which means that only setting dark2 works #}
         <div class="sidebar-wrapper scrollbar scrollbar-inner">
             <div class="sidebar-content">
                 <ul class="nav nav-primary">
