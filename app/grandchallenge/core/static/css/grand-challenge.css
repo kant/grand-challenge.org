@@ -13,3 +13,18 @@
     position: relative;
     left: 0;
 }
+
+/* Fix the logo text colour */
+.main-header .logo-header[data-background-color] .logo {
+    color: #fff!important;
+}
+
+.main-header .logo-header[data-background-color=white] .logo {
+    color: #8d9498!important;
+}
+
+/* Small correction to text logo position */
+.logo {
+    padding-top: 1px;
+    letter-spacing: 0.6px;
+}

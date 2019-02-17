@@ -71,11 +71,9 @@
     <div class="main-header">
         <!-- Logo Header -->
         <div class="logo-header" data-background-color="blue2">
-
-            <a href="{% url 'home' %}" class="logo">
-                <img src="{% static "atlantis/img/logo.svg" %}"
-                     alt="navbar brand"
-                     class="navbar-brand">
+            <a class="logo text-capitalize font-weight-bold"
+               href="{% url 'home' %}">
+                {{ main_challenge_name }}
             </a>
             <button class="navbar-toggler sidenav-toggler ml-auto"
                     type="button" data-toggle="collapse" data-target="collapse"
