@@ -28,3 +28,8 @@
     padding-top: 1px;
     letter-spacing: 0.6px;
 }
+
+.banner-image {
+    width: 100%;
+    border-radius: 6px;
+}
