@@ -1,0 +1,15 @@
+/* Used for images on the challenge list page */
+.rounded-top-left {
+    border-top-left-radius: 3px;
+}
+
+/* Fix display of error messages on forms. See: https://github.com/twbs/bootstrap/issues/23454 */
+.invalid-feedback {
+    display: block;
+}
+
+/* Fix checkbox bug in atlantis.css */
+.form-check [type=checkbox]:checked, .form-check [type=checkbox]:not(:checked) {
+    position: relative;
+    left: 0;
+}
