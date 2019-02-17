@@ -8,7 +8,7 @@ $(document).ready(function () {
     //projectlinks
     var BASE_SELECTOR = "projectlink";
 
-    var filterbuttons = $("#projectfilterbuttons input");
+    var filterbuttons = $(".projectfilterbutton");
 
     init();
 
@@ -64,7 +64,7 @@ $(document).ready(function () {
         filterbuttons.each(function (i, d) {
             log("updating according to " + d.id);
             var checkbox = $(d);
-            if (checkbox.attr("class") === "filter" && checkbox.is(':checked')) {
+            if (checkbox.hasClass("filter") && checkbox.is(':checked')) {
                 active_filters.push(checkbox);
             }
             projectlinks = modifyCollection(checkbox, projectlinks)
@@ -142,7 +142,7 @@ $(document).ready(function () {
             return collection;
         }
 
-        if (checkbox.attr("class") === "filter") {
+        if (checkbox.hasClass("filter")) {
             //filter checkbox will remove all others when checked
             if (checkbox.is(':checked')) {
                 log("hiding all non '." + name + "'");
@@ -151,7 +151,7 @@ $(document).ready(function () {
                 log("filter on '." + name + "' released. doing nothing.");
             }
 
-        } else if (checkbox.attr("class") === "include") {
+        } else if (checkbox.hasClass("include")) {
             // include checkbox will include or exclude only the items with
             // the same name
             if (checkbox.is(':checked')) {
@@ -231,7 +231,7 @@ $(document).ready(function () {
 
     $('#btn_reset_filters').click(function () {
         log("Clicked reset filters!");
-        $("#projectfilterbuttons input.filter").prop("checked", false);
+        $("input.filter").prop("checked", false);
         updateAll();
     });
 
@@ -242,45 +242,5 @@ $(document).ready(function () {
             console.log("* " + msg)
         }
     }
-
-    $('#collapseHost').on('show.bs.collapse', function () {
-        $('#host-chevron').removeClass('fa-chevron-circle-right');
-        $('#host-chevron').addClass('fa-chevron-circle-down');
-    });
-
-    $('#collapseHost').on('hide.bs.collapse', function () {
-        $('#host-chevron').removeClass('fa-chevron-circle-down');
-        $('#host-chevron').addClass('fa-chevron-circle-right');
-    });
-
-    $('#collapseModality').on('show.bs.collapse', function () {
-        $('#modality-chevron').removeClass('fa-chevron-circle-right');
-        $('#modality-chevron').addClass('fa-chevron-circle-down');
-    });
-
-    $('#collapseModality').on('hide.bs.collapse', function () {
-        $('#modality-chevron').removeClass('fa-chevron-circle-down');
-        $('#modality-chevron').addClass('fa-chevron-circle-right');
-    });
-
-    $('#collapseTask').on('show.bs.collapse', function () {
-        $('#task-chevron').removeClass('fa-chevron-circle-right');
-        $('#task-chevron').addClass('fa-chevron-circle-down');
-    });
-
-    $('#collapseTask').on('hide.bs.collapse', function () {
-        $('#task-chevron').removeClass('fa-chevron-circle-down');
-        $('#task-chevron').addClass('fa-chevron-circle-right');
-    });
-
-    $('#collapseStructure').on('show.bs.collapse', function () {
-        $('#structure-chevron').removeClass('fa-chevron-circle-right');
-        $('#structure-chevron').addClass('fa-chevron-circle-down');
-    });
-
-    $('#collapseStructure').on('hide.bs.collapse', function () {
-        $('#structure-chevron').removeClass('fa-chevron-circle-down');
-        $('#structure-chevron').addClass('fa-chevron-circle-right');
-    });
 
 });
