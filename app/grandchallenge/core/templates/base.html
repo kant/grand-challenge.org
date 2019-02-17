@@ -64,6 +64,65 @@
         gtag('js', new Date());
         gtag('config', "{{ google_analytics_id }}");
     </script>
+
+    <!--   Core JS Files   -->
+    <script src="{% static "atlantis/js/core/jquery.3.2.1.min.js" %}"></script>
+    <script src="{% static "atlantis/js/core/popper.min.js" %}"></script>
+    <script src="{% static "atlantis/js/core/bootstrap.min.js" %}"></script>
+
+    <!-- jQuery UI -->
+    <script src="{% static "atlantis/js/plugin/jquery-ui-1.12.1.custom/jquery-ui.min.js" %}"></script>
+    <script src="{% static "atlantis/js/plugin/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js" %}"></script>
+
+    <!-- jQuery Scrollbar -->
+    <script src="{% static "atlantis/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js" %}"></script>
+
+
+    <!-- Chart JS -->
+    <script src="{% static "atlantis/js/plugin/chart.js/chart.min.js" %}"></script>
+
+    <!-- jQuery Sparkline -->
+    <script src="{% static "atlantis/js/plugin/jquery.sparkline/jquery.sparkline.min.js" %}"></script>
+
+    <!-- Chart Circle -->
+    <script src="{% static "atlantis/js/plugin/chart-circle/circles.min.js" %}"></script>
+
+    <!-- Datatables -->
+    <script src="{% static "atlantis/js/plugin/datatables/datatables.min.js" %}"></script>
+
+    <!-- Bootstrap Notify -->
+    <script src="{% static "atlantis/js/plugin/bootstrap-notify/bootstrap-notify.min.js" %}"></script>
+
+    <!-- jQuery Vector Maps -->
+    <script src="{% static "atlantis/js/plugin/jqvmap/jquery.vmap.min.js" %}"></script>
+    <script src="{% static "atlantis/js/plugin/jqvmap/maps/jquery.vmap.world.js" %}"></script>
+
+    <!-- Sweet Alert -->
+    <script src="{% static "atlantis/js/plugin/sweetalert/sweetalert.min.js" %}"></script>
+
+    <!-- Atlantis JS -->
+    <script src="{% static "atlantis/js/atlantis.min.js" %}"></script>
+
+    {# Bootstrap 4 column visibility #}
+    <script type="text/javascript"
+            src="https://cdn.datatables.net/buttons/1.5.4/js/dataTables.buttons.min.js"
+            crossorigin="anonymous"></script>
+    <script type="text/javascript"
+            src="https://cdn.datatables.net/buttons/1.5.4/js/buttons.bootstrap4.min.js"
+            crossorigin="anonymous"></script>
+    <script type="text/javascript"
+            src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.colVis.min.js"
+            crossorigin="anonymous"></script>
+
+    {# Chunked Uploads #}
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.19.1/js/jquery.fileupload.min.js"></script>
+
+    {# Jquery Cookie #}
+    <script src="https://cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.js"
+            integrity="sha256-uEFhyfv3UgzRTnAZ+SEgvYepKKB0FW6RqZLrqfyUNug="
+            crossorigin="anonymous"></script>
+
 </head>
 <body data-background-color="bg1">
 
@@ -387,64 +446,6 @@
 </main>
 
 {% endcomment %}
-
-<!--   Core JS Files   -->
-<script src="{% static "atlantis/js/core/jquery.3.2.1.min.js" %}"></script>
-<script src="{% static "atlantis/js/core/popper.min.js" %}"></script>
-<script src="{% static "atlantis/js/core/bootstrap.min.js" %}"></script>
-
-<!-- jQuery UI -->
-<script src="{% static "atlantis/js/plugin/jquery-ui-1.12.1.custom/jquery-ui.min.js" %}"></script>
-<script src="{% static "atlantis/js/plugin/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js" %}"></script>
-
-<!-- jQuery Scrollbar -->
-<script src="{% static "atlantis/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js" %}"></script>
-
-
-<!-- Chart JS -->
-<script src="{% static "atlantis/js/plugin/chart.js/chart.min.js" %}"></script>
-
-<!-- jQuery Sparkline -->
-<script src="{% static "atlantis/js/plugin/jquery.sparkline/jquery.sparkline.min.js" %}"></script>
-
-<!-- Chart Circle -->
-<script src="{% static "atlantis/js/plugin/chart-circle/circles.min.js" %}"></script>
-
-<!-- Datatables -->
-<script src="{% static "atlantis/js/plugin/datatables/datatables.min.js" %}"></script>
-
-<!-- Bootstrap Notify -->
-<script src="{% static "atlantis/js/plugin/bootstrap-notify/bootstrap-notify.min.js" %}"></script>
-
-<!-- jQuery Vector Maps -->
-<script src="{% static "atlantis/js/plugin/jqvmap/jquery.vmap.min.js" %}"></script>
-<script src="{% static "atlantis/js/plugin/jqvmap/maps/jquery.vmap.world.js" %}"></script>
-
-<!-- Sweet Alert -->
-<script src="{% static "atlantis/js/plugin/sweetalert/sweetalert.min.js" %}"></script>
-
-<!-- Atlantis JS -->
-<script src="{% static "atlantis/js/atlantis.min.js" %}"></script>
-
-{# Bootstrap 4 column visibility #}
-<script type="text/javascript"
-        src="https://cdn.datatables.net/buttons/1.5.4/js/dataTables.buttons.min.js"
-        crossorigin="anonymous"></script>
-<script type="text/javascript"
-        src="https://cdn.datatables.net/buttons/1.5.4/js/buttons.bootstrap4.min.js"
-        crossorigin="anonymous"></script>
-<script type="text/javascript"
-        src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.colVis.min.js"
-        crossorigin="anonymous"></script>
-
-{# Chunked Uploads #}
-<script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.19.1/js/jquery.fileupload.min.js"></script>
-
-{# Jquery Cookie #}
-<script src="https://cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.js"
-        integrity="sha256-uEFhyfv3UgzRTnAZ+SEgvYepKKB0FW6RqZLrqfyUNug="
-        crossorigin="anonymous"></script>
 
 {% block pagejs %}
 {% endblock %}
