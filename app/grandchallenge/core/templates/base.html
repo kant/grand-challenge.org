@@ -234,16 +234,20 @@
                         </a>
                     </li>
 
-                    <li class="nav-section">
+                    {% block challengeNav %}
+
+                        <li class="nav-section">
 							<span class="sidebar-mini-icon">
 								<i class="fa fa-ellipsis-h"></i>
 							</span>
-                        <h4 class="text-section">{% firstof site.title site.short_name %}</h4>
-                    </li>
+                            <h4 class="text-section">{% firstof site.title site.short_name %}</h4>
+                        </li>
 
-                    {% block challengeLinks %} {% endblock %}
+                        {% block challengeLinks %} {% endblock %}
 
-                    {% block challengeAdminLinks %} {% endblock %}
+                        {% block challengeAdminLinks %} {% endblock %}
+
+                    {% endblock %}
 
                 </ul>
             </div>
