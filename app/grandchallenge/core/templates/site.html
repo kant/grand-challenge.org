@@ -19,11 +19,10 @@
 {% block bannerImage %}
     {% if site.banner %}
         <div class="row">
-            <div class="col-md-10 col-lg-8 ml-auto mr-auto">
-                <div class="card">
-                    <a style="width: 100%;"
-                       href="{% url 'challenge-homepage' challenge_short_name=site.short_name %}">
-                        <img src="{{ site.banner.url }}" class="banner-image">
+            <div class="card col-md-10 ml-auto mr-auto p-0">
+                <div class="card-body p-0">
+                    <a href="{% url 'challenge-homepage' challenge_short_name=site.short_name %}">
+                        <img src="{{ site.banner.url }}" class="banner-image" alt="Banner for {{ site.title }}">
                     </a>
                 </div>
             </div>

@@ -4,9 +4,11 @@
 {% load humanize %}
 {% load remove_whitespace %}
 
+{% block contentColumnClass %}col-12{% endblock %}
+
 {% block pagecontent %}
 
-    <h2>Results</h2>
+    <h2>Leaderboard</h2>
 
     <div class="table-responsive">
         <table class="table table-sm table-hover" id="resultsTable">
@@ -197,7 +199,8 @@
                     set up.
                 {% endcomment %}
                 order: [[0, "asc"]],
-                "pageLength": 10,
+                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                "pageLength": 50,
                 "columnDefs": [{
                     {%  if evaluation_config.show_supplementary_file_link %}
                         "targets": [-1],
@@ -220,7 +223,7 @@
                 {% endcomment %}
                 {% if evaluation_config.extra_results_columns|length > 0 or evaluation_config.scoring_method_choice != evaluation_config.ABSOLUTE %}
                     dom: "<'row'<'col-md-5'l><'col-md-7'f>>" +
-                        "<'row'<'col-sm-12'Btr>>" +
+                        "<'row'<'col-12'Btr>>" +
                         "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
                     buttons: [
                         {

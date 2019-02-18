@@ -167,15 +167,6 @@
         </div>
     </li>
 
-    <li class="nav-section"></li>
-
-    <li class="nav-item text-center">
-    <span id="info"
-          class="badge badge-info">Displaying <span
-            class="counter" id="projectlink"></span>
-                    of <span id="counter-total"></span></span>
-    </li>
-
 {% endblock %}
 
 {% block pagecontent %}
@@ -202,12 +193,20 @@
     {% endif %}
 
     <div>
-        <span class="badge badge-info">
-            Active filters:
+
+        <span id="info m-1"
+          class="badge badge-info">Displaying <span
+            class="counter" id="projectlink"></span>
+                    of <span id="counter-total"></span> Challenges</span>
+
+        <span class="badge badge-info m-1">
+            Active Filters:
             <span class="counter" id="active_filter_count"></span>
         </span>
 
-        <div id="all_active_filters" style="display: inline-block;"></div>
+        <div class="w-100"></div>
+
+        <div id="all_active_filters" class="d-inline-block m-1"></div>
 
         <button id="btn_reset_filters"
                 class="btn btn-danger btn-sm"
@@ -216,7 +215,6 @@
             Reset filters
         </button>
 
-        <p></p>
     </div>
 
 
