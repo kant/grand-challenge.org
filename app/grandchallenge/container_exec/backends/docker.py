@@ -16,6 +16,7 @@ from django.core.files import File
 from docker.api.container import ContainerApiMixin
 from docker.errors import ContainerError, APIError
 from docker.tls import TLSConfig
+from docker.types import LogConfig
 from requests import HTTPError
 
 
@@ -59,8 +60,19 @@ class Executor(object):
             "labels": {"job_id": self._job_id},
             "network_disabled": True,
             "mem_limit": settings.CONTAINER_EXEC_MEMORY_LIMIT,
+            # Set to the same as mem_limit to avoid using swap
+            "memswap_limit": settings.CONTAINER_EXEC_MEMORY_LIMIT,
             "cpu_period": settings.CONTAINER_EXEC_CPU_PERIOD,
             "cpu_quota": settings.CONTAINER_EXEC_CPU_QUOTA,
+            # Use the default weight
+            "cpu_shares": 1024,
+            "runtime": settings.CONTAINER_EXEC_DOCKER_RUNTIME,
+            "cap_drop": ["all"],
+            "security_opt": ["no-new-privileges"],
+            "pids_limit": 64,
+            "log_config": LogConfig(
+                type=LogConfig.types.JSON, config={"max-size": "1g"}
+            ),
         }
 
     def __enter__(self):
@@ -122,6 +134,7 @@ class Executor(object):
                     volumes={
                         self._input_volume: {"bind": "/input/", "mode": "rw"}
                     },
+                    name=f"{self._job_id}-writer",
                     detach=True,
                     tty=True,
                     **self._run_kwargs,
@@ -147,6 +160,7 @@ class Executor(object):
                 volumes={
                     self._output_volume: {"bind": "/output/", "mode": "rw"}
                 },
+                name=f"{self._job_id}-chmod-output",
                 command="chmod 777 /output/",
                 remove=True,
                 **self._run_kwargs,
@@ -162,6 +176,7 @@ class Executor(object):
                     self._input_volume: {"bind": "/input/", "mode": "rw"},
                     self._output_volume: {"bind": "/output/", "mode": "rw"},
                 },
+                name=f"{self._job_id}-executor",
                 remove=True,
                 **self._run_kwargs,
             )
@@ -181,6 +196,7 @@ class Executor(object):
                     volumes={
                         self._output_volume: {"bind": "/output/", "mode": "ro"}
                     },
+                    name=f"{self._job_id}-reader",
                     detach=True,
                     tty=True,
                     **self._run_kwargs,
