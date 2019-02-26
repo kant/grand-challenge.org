@@ -29,6 +29,18 @@
     letter-spacing: 0.6px;
 }
 
+/* no-navbar */
+@media screen and (min-width: 991px) {
+    .main-header {
+        width: auto;
+    }
+
+    .main-panel > .content {
+        margin-top: 0;
+        min-height: calc(100% - 67px);
+    }
+}
+
 .banner-image {
     width: 100%;
     border-radius: 6px;

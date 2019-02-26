@@ -91,23 +91,20 @@
 						<i class="icon-menu"></i>
 					</span>
             </button>
-            <button class="topbar-toggler more"><i
-                    class="icon-options-vertical"></i></button>
-            <div class="nav-toggle">
-                <button class="btn btn-toggle toggle-sidebar">
-                    <i class="icon-menu"></i>
-                </button>
-            </div>
+
         </div>
         <!-- End Logo Header -->
+    </div>
 
-        <!-- Navbar Header -->
-        <nav class="navbar navbar-header navbar-expand-lg"
-             data-background-color="{% firstof site.navbar_colour 'light-blue2' %}">
+    <!-- Sidebar -->
+    <div class="sidebar sidebar-style-1"
+         data-background-color="{% if site.sidebar_colour == 'dark2' %}dark2{% endif %}">
+        {# there is a bug in the css lib which means that only setting dark2 works #}
+        <div class="sidebar-wrapper scrollbar scrollbar-inner">
+            <div class="sidebar-content">
+                <ul class="nav nav-primary">
 
-            <div class="container-fluid">
-                <ul class="navbar-nav topbar-nav ml-md-auto align-items-center">
-                    {% block loginbutton %}
+                {% block loginbutton %}
                         {% if user.is_authenticated %}
                             <li class="nav-item dropdown hidden-caret">
                                 <a class="dropdown-toggle nav-link"
@@ -159,24 +156,13 @@
                             <li class="nav-item">
                                 <a class="nav-link"
                                    href="{% url 'userena_signin' %}?next={{ request.build_absolute_uri }}">
-                                    Sign In / Register
+                                    <i class="fas fa-user"></i>
+                                    <p>Sign In / Register</p>
                                 </a>
                             </li>
                         {% endif %}
                     {% endblock %}
-                </ul>
-            </div>
-        </nav>
-        <!-- End Navbar -->
-    </div>
 
-    <!-- Sidebar -->
-    <div class="sidebar sidebar-style-1"
-         data-background-color="{% if site.sidebar_colour == 'dark2' %}dark2{% endif %}">
-        {# there is a bug in the css lib which means that only setting dark2 works #}
-        <div class="sidebar-wrapper scrollbar scrollbar-inner">
-            <div class="sidebar-content">
-                <ul class="nav nav-primary">
                     <li class="nav-item {% if request.resolver_match.view_name == 'challenges:list' %}active{% endif %}">
                         <a href="{% url 'challenges:list' %}">
                             <i class="fas fa-th"></i>
