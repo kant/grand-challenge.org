@@ -237,138 +237,154 @@
     </div>
 
 
-    <div>
+    <div class="row challenge-cards">
+
+        <div class="col-12 col-md-6 col-lg-4 challenge-sizer"></div>
 
         {% for year, challenges in challenges_by_year.items %}
+            {% for challenge in challenges %}
+                <div class="col-12 col-md-6 col-lg-4 mb-3 projectlink {{ challenge.filter_classes|join:" " }} {{ challenge.year }}"
+                     data-groups="{{ challenge.filter_classes|join:',' }}"
+                     data-title="{% firstof challenge.title challenge.short_name %}"
+                     data-year="{{ challenge.year }}">
+                    <div class="card" style="height:400px">
+                        <a id="{{ challenge.short_name }}"
+                           title="{% firstof challenge.title challenge.short_name %}"
+                           href="{{ challenge.get_absolute_url }}"
+                           style="display:block;">
+                            <div class="card-header small p-0 d-flex flex-row flex-nowrap align-items-center">
 
-            <div>
-
-                <div class='yearHeader' id='{{ year }}'>
-                    <h2>{{ year }}</h2>
-                </div>
-
-                <div class='row'>
-                    {% for challenge in challenges %}
-                        <div class="col-12 col-md-6 col-lg-4 mb-3 projectlink {{ challenge.filter_classes|join:" " }} {{ challenge.year }}">
-                            <div class="card" style="height:400px">
-                                <a id="{{ challenge.short_name }}"
-                                   title="{% firstof challenge.title challenge.short_name %}"
-                                   href="{{ challenge.get_absolute_url }}"
-                                   style="display:block;">
-                                    <div class="card-header small p-0 d-flex flex-row flex-nowrap align-items-center">
-
-                                        <img class="thumbnail lazyload rounded-top-left flex-shrink-0"
-                                             alt="{{ challenge.short_name }} logo"
-                                             src="{% static 'images/3697E1-0.8.png' %}"
-                                                {% if challenge.logo %}
-                                                    {# Note, thumbnail class is 5rem/80px in core.css #}
-                                                    {% thumbnail challenge.logo "80x80" crop="center" as im %}
-                                             data-src="{{ im.url }}"
-                                                    {% endthumbnail %}
-                                                {% else %}
-                                             data-src="{{ challenge.gravatar_url }}"
-                                                {% endif %}
-                                        >
-
-                                        <h3 class="m-0 px-3 flex-shrink-1">
-                                            {% firstof challenge.title|truncatewords:3 challenge.short_name|truncatewords:3 %}
-                                        </h3>
-                                    </div>
-                                </a>
-
-                                <div class="card-body small"
-                                     style="overflow: hidden; height:250px; line-height:1.5em">
-                                    {{ challenge.description|truncatewords:35 }}
-                                </div>
-
-                                <div class="card-footer small"
-                                     style="line-height:1.5em">
-
-                                    <dl class="inline mb-0">
-
-                                        {% if challenge.educational %}
-                                            <dd>
-                                                <i class="fas fa-university fa-2x"></i>
-                                            </dd>
+                                <img class="thumbnail lazyload rounded-top-left flex-shrink-0"
+                                     alt="{{ challenge.short_name }} logo"
+                                     src="{% static 'images/3697E1-0.8.png' %}"
+                                        {% if challenge.logo %}
+                                            {# Note, thumbnail class is 5rem/80px in core.css #}
+                                            {% thumbnail challenge.logo "80x80" crop="center" as im %}
+                                     data-src="{{ im.url }}"
+                                            {% endthumbnail %}
+                                        {% else %}
+                                     data-src="{{ challenge.gravatar_url }}"
                                         {% endif %}
+                                >
 
-                                        {% if challenge.cached_num_participants %}
-                                            <dt>Participants</dt>
-                                            <dd>{{ challenge.cached_num_participants|intcomma }}</dd>
-                                        {% endif %}
-
-                                        {% if challenge.use_evaluation and challenge.cached_num_results %}
-                                            <dt>Results</dt>
-                                            <dd>
-                                                <a href="{% url 'evaluation:result-list' challenge_short_name=challenge.short_name %}">{{ challenge.cached_num_results }}</a>
-                                            </dd>
-                                            <dt>Latest Result</dt>
-                                            <dd>
-                                                <a href="{% url 'evaluation:result-list' challenge_short_name=challenge.short_name %}">{{ challenge.cached_latest_result|naturaltime }}</a>
-                                            </dd>
-                                        {% endif %}
-
-                                        {% if challenge.upcoming_workshop_date %}
-                                            <dt>Workshop</dt>
-                                            <dd>
-                                                {{ challenge.upcoming_workshop_date }}
-                                            </dd>
-                                        {% endif %}
-
-                                        {% if challenge.event_name %}
-                                            <dt>Associated with</dt>
-                                            <dd>
-                                                <a
-                                                        href="{{ challenge.event_url }}">{{ challenge.event_name }}</a>
-                                            </dd>
-                                        {% endif %}
-
-
-                                        {% if challenge.publication_journal_name or challenge.publication_url %}
-                                            <dt>Article</dt>
-                                            <dd>
-                                                <a
-                                                        href="{{ challenge.publication_url }}">{% firstof challenge.publication_journal_name challenge.publication_url %}</a>
-                                            </dd>
-                                        {% endif %}
-
-                                        {% if challenge.host_link %}
-                                            <dt>Hosted on</dt>
-                                            <dd>
-                                                {{ challenge.host_link|safe }}
-                                            </dd>
-                                        {% endif %}
-
-                                    </dl>
-
-                                    {% if not challenge.hosted_on_comic %}
-                                        {% if request.user.is_staff %}
-                                            <div>
-                                                <a class="btn btn-primary btn-sm"
-                                                   href="{% url 'challenges:external-update' challenge.short_name %}">
-                                                    <i class="fas fa-edit"></i>
-                                                    Edit
-                                                </a>
-                                                <a class="btn btn-danger btn-sm"
-                                                   href="{% url 'challenges:external-delete' challenge.short_name %}">
-                                                    <i class="fas fa-trash"></i>
-                                                    Delete
-                                                </a>
-                                            </div>
-                                        {% endif %}
-                                    {% endif %}
-                                </div>
+                                <h3 class="m-0 px-3 flex-shrink-1">
+                                    {% firstof challenge.title|truncatewords:3 challenge.short_name|truncatewords:3 %}
+                                </h3>
                             </div>
+                        </a>
+
+                        <div class="card-body small"
+                             style="overflow: hidden; height:250px; line-height:1.5em">
+                            {{ challenge.description|truncatewords:35 }}
                         </div>
-                    {% endfor %}
+
+                        <div class="card-footer small"
+                             style="line-height:1.5em">
+
+                            <dl class="inline mb-0">
+
+                                {% if challenge.educational %}
+                                    <dd>
+                                        <i class="fas fa-university fa-2x"></i>
+                                    </dd>
+                                {% endif %}
+
+                                {% if challenge.cached_num_participants %}
+                                    <dt>Participants</dt>
+                                    <dd>{{ challenge.cached_num_participants|intcomma }}</dd>
+                                {% endif %}
+
+                                {% if challenge.use_evaluation and challenge.cached_num_results %}
+                                    <dt>Results</dt>
+                                    <dd>
+                                        <a href="{% url 'evaluation:result-list' challenge_short_name=challenge.short_name %}">{{ challenge.cached_num_results }}</a>
+                                    </dd>
+                                    <dt>Latest Result</dt>
+                                    <dd>
+                                        <a href="{% url 'evaluation:result-list' challenge_short_name=challenge.short_name %}">{{ challenge.cached_latest_result|naturaltime }}</a>
+                                    </dd>
+                                {% endif %}
+
+                                {% if challenge.upcoming_workshop_date %}
+                                    <dt>Workshop</dt>
+                                    <dd>
+                                        {{ challenge.upcoming_workshop_date }}
+                                    </dd>
+                                {% endif %}
+
+                                {% if challenge.event_name %}
+                                    <dt>Associated with</dt>
+                                    <dd>
+                                        <a
+                                                href="{{ challenge.event_url }}">{{ challenge.event_name }}</a>
+                                    </dd>
+                                {% endif %}
+
+
+                                {% if challenge.publication_journal_name or challenge.publication_url %}
+                                    <dt>Article</dt>
+                                    <dd>
+                                        <a
+                                                href="{{ challenge.publication_url }}">{% firstof challenge.publication_journal_name challenge.publication_url %}</a>
+                                    </dd>
+                                {% endif %}
+
+                                {% if challenge.host_link %}
+                                    <dt>Hosted on</dt>
+                                    <dd>
+                                        {{ challenge.host_link|safe }}
+                                    </dd>
+                                {% endif %}
+
+                            </dl>
+
+                            {% if not challenge.hosted_on_comic and request.user.is_staff %}
+                                <div>
+                                    <a class="btn btn-primary btn-sm"
+                                       href="{% url 'challenges:external-update' challenge.short_name %}">
+                                        <i class="fas fa-edit"></i>
+                                        Edit
+                                    </a>
+                                    <a class="btn btn-danger btn-sm"
+                                       href="{% url 'challenges:external-delete' challenge.short_name %}">
+                                        <i class="fas fa-trash"></i>
+                                        Delete
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
-            </div>
+            {% endfor %}
         {% endfor %}
     </div>
 {% endblock %}
 
 {% block deferred-js %}
     {{ block.super }}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Shuffle/5.2.1/shuffle.min.js"
+            integrity="sha256-fZxck/t3HS/B3I3oN4VkAw4VF5zQNhrDR96rOO2FY1E="
+            crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+        "use strict";
+
+        var Shuffle = window.Shuffle;
+        var element = document.querySelector('.challenge-cards');
+
+        var shuffleInstance = new Shuffle(element, {
+            itemSelector: '.projectlink',
+            sizer: element.querySelector('.challenge-sizer'),
+            delimeter: ',',
+            filterMode: Shuffle.FilterMode.ALL
+        });
+
+        shuffleInstance.filter(['modality-MR']);
+    </script>
+
+    {% comment %}
     <script type="text/javascript"
             src="{% static "js/challenges/challenge_list_filters.js" %}"></script>
+    {% endcomment %}
 {% endblock %}
