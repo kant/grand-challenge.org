@@ -41,7 +41,6 @@ class MLModel(UUIDModel, ContainerImageModel):
     """
 
     title = models.CharField(max_length=64)
-    slug = models.SlugField(max_length=64, unique=True)
     description = models.TextField(blank=True, default="")
     task_types = models.ManyToManyField(
         TaskType,

@@ -120,7 +120,6 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("title", models.CharField(max_length=64)),
-                ("slug", models.SlugField(max_length=64, unique=True)),
                 ("description", models.TextField(blank=True, default="")),
                 (
                     "creator",
