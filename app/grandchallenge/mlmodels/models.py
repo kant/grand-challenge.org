@@ -21,6 +21,7 @@ from grandchallenge.container_exec.models import (
 from grandchallenge.core.models import UUIDModel
 from grandchallenge.jqfileupload.models import StagedFile
 from grandchallenge.jqfileupload.widgets.uploader import StagedAjaxFile
+from grandchallenge.subdomains.utils import reverse
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,8 @@ class MLModel(UUIDModel, ContainerImageModel):
     '/output/images/'.
     """
 
-    pass
+    def get_absolute_url(self):
+        return reverse("mlmodels:mlmodel-detail", kwargs={"pk": self.pk})
 
 
 class Result(UUIDModel):
