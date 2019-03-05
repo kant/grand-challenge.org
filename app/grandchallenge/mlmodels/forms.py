@@ -1,6 +1,7 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
+from django_select2.forms import Select2MultipleWidget
 
 from grandchallenge.core.validators import ExtensionValidator
 from grandchallenge.jqfileupload.widgets import uploader
@@ -33,4 +34,17 @@ class MLModelForm(forms.ModelForm):
 
     class Meta:
         model = MLModel
-        fields = ["chunked_upload", "requires_gpu"]
+        fields = [
+            "title",
+            "description",
+            "task_types",
+            "modalities",
+            "structures",
+            "requires_gpu",
+            "chunked_upload",
+        ]
+        widgets = {
+            "task_types": Select2MultipleWidget,
+            "modalities": Select2MultipleWidget,
+            "structures": Select2MultipleWidget,
+        }

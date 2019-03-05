@@ -14,7 +14,9 @@ class Algorithm(UUIDModel):
     slug = models.SlugField(
         max_length=32, editable=False, unique=True, null=True
     )
-    mlmodel = models.ForeignKey("mlmodels.MLModel", on_delete=models.CASCADE)
+    mlmodel = models.ForeignKey(
+        "mlmodels.MLModel", on_delete=models.SET_NULL, null=True, default=None
+    )
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)

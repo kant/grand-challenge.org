@@ -3,6 +3,7 @@
 {% load grandchallenge_tags %}
 {% load guardian_tags %}
 {% load clean from bleach %}
+{% load static %}
 
 
 {% block content %}
@@ -66,4 +67,9 @@
             here</a>
         to view your current submissions to this challenge.</p>
 
+{% endblock %}
+
+{% block script %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static "js/unsavedform.js" %}"></script>
 {% endblock %}

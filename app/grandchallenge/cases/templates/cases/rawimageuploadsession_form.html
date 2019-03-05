@@ -1,11 +1,14 @@
 {% extends "nobanner.html" %}
 {% load crispy_forms_tags %}
 {% load grandchallenge_tags %}
+{% load static %}
 
 {% block content %}
-
     <h2>Upload images</h2>
-
     {% crispy form %}
+{% endblock %}
 
+{% block script %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static "js/unsavedform.js" %}"></script>
 {% endblock %}

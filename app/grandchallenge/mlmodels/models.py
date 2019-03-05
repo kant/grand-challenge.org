@@ -9,6 +9,11 @@ from django.db import models
 from django.utils import timezone
 
 from grandchallenge.cases.models import RawImageUploadSession, RawImageFile
+from grandchallenge.challenges.models import (
+    TaskType,
+    ImagingModality,
+    BodyStructure,
+)
 from grandchallenge.container_exec.backends.docker import (
     Executor,
     cleanup,
@@ -34,6 +39,25 @@ class MLModel(UUIDModel, ContainerImageModel):
     output json file at `/output/results.json` along with image files in
     '/output/images/'.
     """
+
+    title = models.CharField(max_length=64)
+    slug = models.SlugField(max_length=64, unique=True)
+    description = models.TextField(blank=True, default="")
+    task_types = models.ManyToManyField(
+        TaskType,
+        blank=True,
+        help_text="What type of task does this model perform?",
+    )
+    modalities = models.ManyToManyField(
+        ImagingModality,
+        blank=True,
+        help_text="What imaging modalities does this model work with?",
+    )
+    structures = models.ManyToManyField(
+        BodyStructure,
+        blank=True,
+        help_text="What structures does this model work with?",
+    )
 
     def get_absolute_url(self):
         return reverse("mlmodels:mlmodel-detail", kwargs={"pk": self.pk})
