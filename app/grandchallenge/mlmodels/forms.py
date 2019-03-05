@@ -1,4 +1,5 @@
 from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
 from django import forms
 
 from grandchallenge.core.validators import ExtensionValidator
@@ -28,6 +29,7 @@ class MLModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
+        self.helper.add_input(Submit("save", "Submit", css_class="d-none"))
 
     class Meta:
         model = MLModel

@@ -99,6 +99,7 @@ class MethodForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
+        self.helper.add_input(Submit("save", "Submit", css_class="d-none"))
 
     class Meta:
         model = Method
@@ -162,6 +163,7 @@ class SubmissionForm(forms.ModelForm):
             del self.fields["publication_url"]
 
         self.helper = FormHelper(self)
+        self.helper.add_input(Submit("save", "Submit", css_class="d-none"))
 
     class Meta:
         model = Submission

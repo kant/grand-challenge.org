@@ -24,10 +24,9 @@ function upload_fold_unfold(element) {
         var failed_files_list = upload_element.find("div.failed-list");
         var total_expected_files = 0;
 
-        var is_multiupload = upload_element.attr("multi_upload") === "true";
-        var is_autocommit = upload_element.attr("auto_commit") === "true";
+        var is_multiupload = upload_element.attr("data-multi-upload") === "true";
 
-        var target_url = upload_element.attr("upload_target");
+        var target_url = upload_element.attr("data-upload-target");
 
         var client_upload_session_key = generate_labeled_id("client_upload_session");
         target_url = target_url + "?client_session=" + client_upload_session_key;
@@ -100,7 +99,7 @@ function upload_fold_unfold(element) {
         }
 
         function generate_uploaded_file_element(filename, uuid, extra_attributes) {
-            return $("<div class='uploaded-file'>Uploaded: " + filename + "</div>")
+            return $("<div class='uploaded-file'>Ready: " + filename + ", please click 'Submit' to continue.</div>")
         }
 
         var succeeded_uploads_list = [];
@@ -125,11 +124,7 @@ function upload_fold_unfold(element) {
             }
             update_hidden_form_element();
 
-            if (is_autocommit &&
-                    (succeeded_uploads_list.length === total_expected_files)) {
-                total_expected_files = 0; // In case we submit does not work
-                upload_element.closest('form').submit();
-            }
+            document.getElementById("submit-id-save").classList.remove("d-none");
         }
 
         function update_hidden_form_element() {
@@ -198,7 +193,7 @@ function upload_fold_unfold(element) {
             );
 
             if (progress >= 100) {
-                progress_bar.removeClass("bg-info progress-bar-striped progress-bar-animated").addClass("bg-success");
+                progress_bar.removeClass("bg-info progress-bar-striped progress-bar-animated");
             }
 
         });

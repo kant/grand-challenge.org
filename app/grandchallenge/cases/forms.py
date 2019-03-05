@@ -15,7 +15,6 @@ from grandchallenge.jqfileupload.widgets.uploader import (
 upload_raw_files_widget = uploader.AjaxUploadWidget(
     ajax_target_path="ajax/raw_files/",
     multifile=True,
-    auto_commit=False,
     upload_validators=[reject_duplicate_filenames],
 )
 
@@ -30,7 +29,7 @@ class UploadRawImagesForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.add_input(Submit("save", "Submit"))
+        self.helper.add_input(Submit("save", "Submit", css_class="d-none"))
 
     def save(self, commit=True):
         instance = super().save(commit=False)  # type: RawImageUploadSession
